@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 6765513939558134032}
   - component: {fileID: 2544753712496314065}
   - component: {fileID: 4853121579423840124}
+  - component: {fileID: -2214546274671921934}
+  - component: {fileID: 4782197696512790321}
   m_Layer: 0
   m_Name: StairsUp
   m_TagString: Stairs
@@ -66,8 +68,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1913114787
-  m_SortingLayer: 2
+  m_SortingLayerID: -1511067477
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_Sprite: {fileID: -5007831482432455834, guid: c29f1d0d564a61a4282f02849dfc137a,
     type: 3}
@@ -107,3 +109,37 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-2214546274671921934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214896725739838818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bd217239552aca4a858663fc5292533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damagedSprite: {fileID: 0}
+--- !u!50 &4782197696512790321
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214896725739838818}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

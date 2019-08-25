@@ -6,6 +6,8 @@ using Random = UnityEngine.Random;
 
 public class Player : MovingObject {
 
+	public static Player Instance;
+	
 	private const int Food1Health = 10;
 	private const int Food2Health = 20;
 
@@ -50,33 +52,50 @@ public class Player : MovingObject {
 
 	private ExtendedParameters _parameters;
 	
-	public Text levelText;
-	public Text healthText;
-	public Text experienceText;
-	public Text armorText;
-	public Text popUp;
+	private Text _levelText;
+	private Text _healthText;
+	private Text _experienceText;
+	private Text _armorText;
+	private Text _popUp;
 
 	private Animator _animator;
 	private static readonly int PlayerChop = Animator.StringToHash("playerChop");
 	private static readonly int PlayerHit = Animator.StringToHash("playerHit");
-
+	
 	protected override void Start() {
-
-		//levelText = GameObject.Find("LevelText").GetComponent<Text>();
+		
+		if (Instance == null) {
+			Instance = this;
+		}
+		else if (Instance != this) {
+			Destroy(gameObject);
+		}
+		
+		MoveTime = 0.1f;
 		
 		_animator = GetComponent<Animator>();
-
 		_parameters = new ExtendedParameters();
 
-		levelText.text = "Level: " + _parameters.PlayerLevel;
-		healthText.text = "Health: " + _parameters.Health;
-		armorText.text = "Armor: " + _parameters.Armor;
-		experienceText.text = "Experience: " + _parameters.Experience;
-		popUp.text = "";
+		UpdateTexts();		
 
 		base.Start();
+		DontDestroyOnLoad(gameObject);
 	}
 
+	public void UpdateTexts() {
+		_levelText = GameObject.Find("LevelText").GetComponent<Text>();
+		_healthText = GameObject.Find("HealthText").GetComponent<Text>();
+		_armorText = GameObject.Find("ArmorText").GetComponent<Text>();
+		_experienceText = GameObject.Find("ExperienceText").GetComponent<Text>();
+		_popUp = GameObject.Find("PopUp").GetComponent<Text>();
+		
+		_levelText.text = "Level: " + _parameters.PlayerLevel;
+		_healthText.text = "Health: " + _parameters.Health;
+		_armorText.text = "Armor: " + _parameters.Armor;
+		_experienceText.text = "Experience: " + _parameters.Experience;
+		_popUp.text = "";
+	}
+	
 	private void Update () {
 		
 		if(!GameManager.Instance.playersCanMove) return;
@@ -100,7 +119,7 @@ public class Player : MovingObject {
 
 	private void CheckLevel(int experienceGained) {
 
-		_parameters.Experience += experienceGained;
+		_parameters.Experience += (experienceGained % _parameters.PlayerLevel);
 		
 		if (_parameters.Experience < 100) return;
 
@@ -113,19 +132,19 @@ public class Player : MovingObject {
 	
 	protected override void AttemptMove (int xDir, int yDir) {
 		
-		popUp.text = "";
+		_popUp.text = "";
 		GameManager.Instance.playersCanMove = false;
 		
 		base.AttemptMove(xDir, yDir);
 
-		levelText.text = "Level: " + _parameters.PlayerLevel;
-		healthText.text = "Health: " + _parameters.Health;
-		armorText.text = "Armor: " + _parameters.Armor;
-		experienceText.text = "Experience: " + _parameters.Experience;
+		_levelText.text = "Level: " + _parameters.PlayerLevel;
+		_healthText.text = "Health: " + _parameters.Health;
+		_armorText.text = "Armor: " + _parameters.Armor;
+		_experienceText.text = "Experience: " + _parameters.Experience;
 		
 		if (HitOuterWall) {
 			GameManager.Instance.playersCanMove = true;
-		}	
+		}
 	}
 	
 	protected override void OnCantMove(MonoBehaviour component) {
@@ -133,9 +152,9 @@ public class Player : MovingObject {
 
 		if (hitObj) {
 			if (hitObj is Enemy enemy) {
-
+				
 				if (!HasItem("Sword")) {
-					popUp.text = "You can't attack enemies without a sword";
+					_popUp.text = "You can't attack enemies without a sword";
 				}
 				else {
 					enemy.TakeDamage(_parameters.AttackPoints);
@@ -154,18 +173,18 @@ public class Player : MovingObject {
 			}
 
 			if (hitObj is Sign sign) {
-				popUp.text = sign.signText;
+				_popUp.text = sign.signText;
 			}
 
 			if (hitObj is Chest chest) {
 
 				if (!HasItem("Key")) {
-					popUp.text = "You need a key to open the chest";
+					_popUp.text = "You need a key to open the chest";
 				}
 				else {
 					if (chest.IsOpen) {
 						// end the game, will delete this line
-						popUp.text = "You won!";
+						_popUp.text = "You won!";
 					}
 					else {
 						chest.Open();	
@@ -177,7 +196,7 @@ public class Player : MovingObject {
 	}
 	
 	private void OnTriggerEnter2D (Collider2D other) {
-		
+
 		// uncollectibles
 		
 		if(other.CompareTag("Exit")) {
@@ -188,9 +207,16 @@ public class Player : MovingObject {
 
 		if (other.CompareTag("Stairs")) {
 			//StartCoroutine(GameManager.Instance.LoadNextFloor());
-			GameManager.Instance.LoadNextFloor();
+
+			
+			if (_onStairs) {
+				return;
+			}
+
 			_onStairs = true;
-			//enabled = false;
+			Stairs stairs = other.GetComponent<Stairs>();
+			stairs.ChangeLevel();
+
 			return;
 		}
 
@@ -200,50 +226,16 @@ public class Player : MovingObject {
 			var healthPerFood = other.name.Equals("Food1") ? Food1Health : Food2Health;
 
 			_parameters.Health = Math.Min(100, _parameters.Health + healthPerFood);
-			healthText.text = "+" + healthPerFood + " Health: " + _parameters.Health;
+			_healthText.text = "+" + healthPerFood + " Health: " + _parameters.Health;
 		}
 		
 		else if(other.CompareTag("Drink")) {
 			var energyPerDrink = other.name.Equals("Drink1") ? Drink1Energy : Drink2Energy;
 			
 			_parameters.Experience = Math.Min(100, _parameters.Experience + energyPerDrink);
-			experienceText.text = "+" + energyPerDrink + " Experience: " + _parameters.Experience;
+			_experienceText.text = "+" + energyPerDrink + " Experience: " + _parameters.Experience;
 		}
-		
-//		else if (other.CompareTag("Armor")) {
-//
-//			var armorToGain = 0;
-//			
-//			if (other.name.Equals("Helmet")) {
-//				var helmetIndex = _parameters.powerups.FindIndex(x => x.name.Equals("Helmet"));
-//				if (!_parameters.powerups[helmetIndex].isActive) {
-//					_parameters.powerups[helmetIndex].isActive = true;
-//					
-//					armorToGain = HelmetArmor;			
-//				}
-//			}
-//			else if (other.name.Equals("BladeArmor")) {
-//				var armorIndex = _parameters.powerups.FindIndex(x => x.name.Equals("BladeArmor"));
-//				if (!_parameters.powerups[armorIndex].isActive) {
-//					_parameters.powerups[armorIndex].isActive = true;
-//					
-//					armorToGain = ChestArmor;			
-//				}
-//			}
-//			else if (other.name.Equals("Skates")) {
-//				var skatesIndex = _parameters.powerups.FindIndex(x => x.name.Equals("Skates"));
-//				if (!_parameters.powerups[skatesIndex].isActive) {
-//					_parameters.powerups[skatesIndex].isActive = true;
-//					
-//					armorToGain =  LegArmor;			
-//				}
-//			}
-//			
-//			if (other.name.Equals("Shield")) {
-//				_parameters.powerups[_parameters.powerups.FindIndex(x => x.name.Equals("Shield"))].isActive = true;
-//			}
-//		}
-		
+
 		else if (other.CompareTag("Sword")) {
 			_parameters.powerups[_parameters.powerups.FindIndex(x => x.name.Equals("Sword"))].isActive = true;
 		}
@@ -253,6 +245,10 @@ public class Player : MovingObject {
 		}
 		
 		other.gameObject.SetActive (false);
+	}
+
+	private void OnTriggerExit2D(Collider2D other) {
+		_onStairs = false;
 	}
 
 	public override void TakeDamage (int loss) {
@@ -270,12 +266,12 @@ public class Player : MovingObject {
 		_parameters.Health -= loss;
 		
 		if(loss > 0)
-			healthText.text = "-" + loss + " Health: " + _parameters.Health;
+			_healthText.text = "-" + loss + " Health: " + _parameters.Health;
 		
 		ChangeToDamagedSprite();
 		CheckIfGameOver ();
 	}
-	
+
 	private void CheckIfGameOver () {
 		if (_parameters.Health <= 0) {
 			enabled = false;

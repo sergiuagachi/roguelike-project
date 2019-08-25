@@ -1,88 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class MovingObject : PhysicsObject
-{
-	public float moveTime = 0.1f;			//Time it will take object to move, in seconds.
-	public LayerMask blockingLayer;			//Layer on which collision will be checked.
+public abstract class MovingObject : PhysicsObject {
+	
+	protected float MoveTime;			//Time it will take object to move, in seconds.
+	private LayerMask _blockingLayer;			//Layer on which collision will be checked.
+	//public LayerMask _blockingLayer;
 	
 	private float _inverseMoveTime;			//Used to make movement more efficient.
 
 	protected bool HitOuterWall;
-	protected bool StartedMoving;
 	
 	//Protected, virtual functions can be overridden by inheriting classes.
 	protected override void Start () {
-		_inverseMoveTime = 1f / moveTime;
+		_inverseMoveTime = 1f / MoveTime;
+		_blockingLayer =  LayerMask.GetMask("BlockingLayer");
+		
 		base.Start();
-	}
-
-	public bool HasStartedMoving() {
-		return StartedMoving;
-	}
-
-	public void StopedMoving() {
-		StartedMoving = false;
-	}
-	
-	protected bool Move (int xDir, int yDir, out RaycastHit2D hit)
-	{
-		//Store start position to move from, based on objects current transform position.
-		Vector2 start = transform.position;
-		
-		// Calculate end position based on the direction parameters passed in when calling Move.
-		Vector2 end = start + new Vector2 (xDir, yDir);
-		
-		//Disable the boxCollider so that linecast doesn't hit this object's own collider.
-		BoxCollider.enabled = false;
-		
-		//Cast a line from start point to end point checking collision on blockingLayer.
-		hit = Physics2D.Linecast (start, end, blockingLayer);
-		
-		//Re-enable boxCollider after linecast
-		BoxCollider.enabled = true;
-		
-		//Check if anything was hit
-		if(hit.transform == null)
-		{
-			//If nothing was hit, start SmoothMovement co-routine passing in the Vector2 end as destination
-			StartCoroutine (SmoothMovement (end));
-			
-			//Return true to say that Move was successful
-			return true;
-		}
-		
-		//If something was hit, return false, Move was unsuccesful.
-		return false;
-	}
-	
-	protected IEnumerator SmoothMovement (Vector3 end) {
-		//Calculate the remaining distance to move based on the square magnitude of the difference between current position and end parameter. 
-		//Square magnitude is used instead of magnitude because it's computationally cheaper.
-		float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
-		StartedMoving = true;
-		
-		//While that distance is greater than a very small amount (Epsilon, almost zero):
-		while(sqrRemainingDistance > float.Epsilon)
-		{
-			//Find a new position proportionally closer to the end, based on the moveTime
-			Vector3 newPostion = Vector3.MoveTowards(Rb2D.position, end, _inverseMoveTime * Time.deltaTime);
-			
-			//Call MovePosition on attached Rigidbody2D and move it to the calculated position.
-			Rb2D.MovePosition (newPostion);
-			
-			//Recalculate the remaining distance after moving.
-			sqrRemainingDistance = (transform.position - end).sqrMagnitude;
-			
-			//Return and loop until sqrRemainingDistance is close enough to zero to end the function
-			yield return null;
-		}
-
-		if (this is Player) {
-			yield return new WaitForSeconds(0.1f);
-		}
-
-		GameManager.Instance.playersCanMove = true;
 	}
 
 	protected virtual void AttemptMove(int xDir, int yDir) {
@@ -123,6 +57,60 @@ public abstract class MovingObject : PhysicsObject
 			HitOuterWall = true;
 		}
 	}
-	
+
+	private IEnumerator SmoothMovement (Vector3 end) {
+
+		//Calculate the remaining distance to move based on the square magnitude of the difference between current position and end parameter. 
+		//Square magnitude is used instead of magnitude because it's computationally cheaper.
+		float sqrRemainingDistance = (transform.position - end).sqrMagnitude;
+		
+		//While that distance is greater than a very small amount (Epsilon, almost zero):
+		while(sqrRemainingDistance > float.Epsilon)
+		{
+			//Find a new position proportionally closer to the end, based on the moveTime
+			Vector3 newPostion = Vector3.MoveTowards(Rb2D.position, end, _inverseMoveTime * Time.deltaTime);
+			
+			//Call MovePosition on attached Rigidbody2D and move it to the calculated position.
+			Rb2D.MovePosition (newPostion);
+			
+			//Recalculate the remaining distance after moving.
+			sqrRemainingDistance = (transform.position - end).sqrMagnitude;
+			
+			//Return and loop until sqrRemainingDistance is close enough to zero to end the function
+			yield return null;
+		}
+
+		if (this is Player) {
+			yield return new WaitForSeconds(0.1f);
+		}
+
+		GameManager.Instance.playersCanMove = true;
+	}
+
+	private bool Move (int xDir, int yDir, out RaycastHit2D hit)
+	{
+		//Store start position to move from, based on objects current transform position.
+		Vector2 start = transform.position;
+		
+		// Calculate end position based on the direction parameters passed in when calling Move.
+		Vector2 end = start + new Vector2 (xDir, yDir);
+		
+		//Cast a line from start point to end point checking collision on blockingLayer.
+		hit = Physics2D.Linecast (start, end, _blockingLayer);
+		
+		//Check if anything was hit
+		if(hit.transform == null)
+		{
+			//If nothing was hit, start SmoothMovement co-routine passing in the Vector2 end as destination
+			StartCoroutine (SmoothMovement (end));
+			
+			//Return true to say that Move was successful
+			return true;
+		}
+		
+		//If something was hit, return false, Move was unsuccesful.
+		return false;
+	}
+
 	protected abstract void OnCantMove(MonoBehaviour component);
 }

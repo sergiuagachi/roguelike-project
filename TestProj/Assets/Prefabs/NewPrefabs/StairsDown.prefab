@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 461382171783457941}
   - component: {fileID: 8706601253548464980}
   - component: {fileID: 1791596937592318713}
+  - component: {fileID: -7225350652355641390}
   m_Layer: 0
   m_Name: StairsDown
   m_TagString: Stairs
@@ -66,8 +67,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1913114787
-  m_SortingLayer: 2
+  m_SortingLayerID: -1511067477
+  m_SortingLayer: 1
   m_SortingOrder: 1
   m_Sprite: {fileID: 1021861946993044410, guid: c29f1d0d564a61a4282f02849dfc137a,
     type: 3}
@@ -107,3 +108,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-7225350652355641390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4987775514538082535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bd217239552aca4a858663fc5292533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

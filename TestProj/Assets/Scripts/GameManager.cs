@@ -4,8 +4,6 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-	public float levelStartDelay = 2f;
-	
 	public static GameManager Instance;
 	public bool playersCanMove = true;
 	private int _playerDamage;
@@ -13,8 +11,6 @@ public class GameManager : MonoBehaviour {
 	public int attackPointsPerLevel = 25;
 	
 	private int _floor = 1;
-
-	private Player _playerInstace;
 
 	private void Awake() {
 		if (Instance == null) {
@@ -26,20 +22,24 @@ public class GameManager : MonoBehaviour {
 
 		DontDestroyOnLoad(gameObject);
 	}
-	
-	public void LoadNextFloor() {
-		
-		//yield return new WaitForSeconds(levelStartDelay);
-		_floor++;
 
-		SceneManager.LoadScene("Floor" + _floor, LoadSceneMode.Single);
+	public void LoadNextFloor() {
+		_floor++;
+		LoadFloor();
 	}
 	
-	public IEnumerator LoadPreviousFloor() {
-		
-		yield return new WaitForSeconds(levelStartDelay);
-		
+	public void LoadPreviousFloor() {
 		_floor--;
+		LoadFloor();
+	}
+
+	private void LoadFloor() {
+		SceneManager.LoadScene("Floor" + _floor, LoadSceneMode.Single);
+		SceneManager.sceneLoaded += OnSceneLoaded;
+	}
+
+	private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1) {
+		Player.Instance.UpdateTexts();
 	}
 
 	public void GameOver() {

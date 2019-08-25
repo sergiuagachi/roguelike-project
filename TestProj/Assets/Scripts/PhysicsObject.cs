@@ -7,14 +7,14 @@ public abstract class PhysicsObject : MonoBehaviour
 		public int AttackPoints;
 	}
 
-	protected BoxCollider2D BoxCollider;
+	protected BoxCollider2D BoxCollider2D;
 	protected Rigidbody2D Rb2D;
 	
 	public Sprite damagedSprite;
 	protected SpriteRenderer SpriteRenderer;
 	
 	protected virtual void Start () {
-		BoxCollider = GetComponent <BoxCollider2D> ();
+		BoxCollider2D = GetComponent <BoxCollider2D> ();
 		Rb2D = GetComponent <Rigidbody2D> ();
 		
 		SpriteRenderer = GetComponent<SpriteRenderer> ();

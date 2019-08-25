@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1500897149133773782}
   - component: {fileID: 6012251912217038815}
   - component: {fileID: 273587970025406912}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -162,17 +162,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damagedSprite: {fileID: 0}
-  moveTime: 0.1
-  blockingLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  restartLevelDelay: 1
-  food1Health: 10
-  food2Health: 20
-  drink1Energy: 10
-  drink2Energy: 20
-  playerDamage: 5
-  healthText: {fileID: 4995416108945828919, guid: 3d9d3682fc3146047b92c3fa7d34be48,
-    type: 3}
-  energyText: {fileID: 0}
-  armorText: {fileID: 0}
+  onStairs: 0
