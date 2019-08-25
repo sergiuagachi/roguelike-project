@@ -1,12 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Wall : PhysicsObject
+﻿public class Wall : PhysicsObject
 {
+    DefaultParameters _parameters = new DefaultParameters();
+    
     protected override void Start() {
-        _defaultParameters.Health = 6f;
+        _parameters.Health = 6;
         
         base.Start();
+    }
+
+    public override void TakeDamage(int loss) {
+        throw new System.NotImplementedException();
     }
 }

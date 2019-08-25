@@ -81,6 +81,8 @@ public abstract class MovingObject : PhysicsObject
 		if (this is Player) {
 			yield return new WaitForSeconds(0.1f);
 		}
+
+		GameManager.Instance.playersCanMove = true;
 	}
 
 	protected virtual void AttemptMove(int xDir, int yDir) {
@@ -109,7 +111,7 @@ public abstract class MovingObject : PhysicsObject
 			return;
 
 		//Get a component reference to the component of type T attached to the object that was hit
-		PhysicsObject hitComponent = hit.transform.GetComponent<PhysicsObject>();
+		MonoBehaviour hitComponent = hit.transform.GetComponent<MonoBehaviour>();
 
 		//If canMove is false and hitComponent is not equal to null, meaning MovingObject is blocked and has hit something it can interact with.
 		if (!canMove && hitComponent != null) {
@@ -122,5 +124,5 @@ public abstract class MovingObject : PhysicsObject
 		}
 	}
 	
-	protected abstract void OnCantMove(PhysicsObject component);
+	protected abstract void OnCantMove(MonoBehaviour component);
 }

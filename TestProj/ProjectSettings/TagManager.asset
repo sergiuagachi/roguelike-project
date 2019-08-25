@@ -10,7 +10,11 @@ TagManager:
   - Drink
   - Armor
   - Accessory
-  - Weapon
+  - Sign
+  - Sword
+  - Key
+  - Stairs
+  - Chest
   layers:
   - Default
   - TransparentFX

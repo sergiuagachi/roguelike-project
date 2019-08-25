@@ -3,10 +3,10 @@
 public abstract class PhysicsObject : MonoBehaviour
 {
 	public class DefaultParameters {
-		public float Health;
+		public int Health;
+		public int AttackPoints;
 	}
-	protected DefaultParameters _defaultParameters = new DefaultParameters();
-	
+
 	protected BoxCollider2D BoxCollider;
 	protected Rigidbody2D Rb2D;
 	
@@ -25,14 +25,5 @@ public abstract class PhysicsObject : MonoBehaviour
 			SpriteRenderer.sprite = damagedSprite;
 	}
 	
-	public virtual void TakeDamage(int loss) {
-		_defaultParameters.Health -= loss;
-		
-		ChangeToDamagedSprite();
-
-		if (_defaultParameters.Health <= 0) {
-			gameObject.SetActive(false);
-			enabled = false;
-		}
-	}
+	public abstract void TakeDamage(int loss);
 }
