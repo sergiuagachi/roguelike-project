@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -14,7 +15,9 @@ public class Player : MovingObject {
 	private const int Drink1Energy = 10;
 	private const int Drink2Energy = 20;
 
-	private bool _onStairs; 
+	private bool _onStairs;
+
+	private Vector3 _lastCheckpointPosition;
 	
 	[Serializable]
 	public class Item {
@@ -27,8 +30,8 @@ public class Player : MovingObject {
 		}
 	}
 
-	//[Serializable]
-	private class ExtendedParameters : DefaultParameters {
+	[Serializable]
+	public class ExtendedParameters : DefaultParameters {
 		public int Experience;
 		public int PlayerLevel;
 
@@ -49,8 +52,8 @@ public class Player : MovingObject {
 			PlayerLevel = 1;
 		}
 	}
-
-	private ExtendedParameters _parameters;
+	
+	public ExtendedParameters _parameters;
 	
 	private Text _levelText;
 	private Text _healthText;
@@ -76,8 +79,10 @@ public class Player : MovingObject {
 		_animator = GetComponent<Animator>();
 		_parameters = new ExtendedParameters();
 
-		UpdateTexts();		
+		UpdateTexts();
 
+		_lastCheckpointPosition = transform.position;
+		
 		base.Start();
 		DontDestroyOnLoad(gameObject);
 	}
@@ -165,6 +170,7 @@ public class Player : MovingObject {
 					}
 					
 					_animator.SetTrigger(PlayerChop);
+					StartCoroutine(WaitTillNextMove());
 				}
 			}
 
@@ -192,7 +198,6 @@ public class Player : MovingObject {
 				}
 			}
 		}
-		GameManager.Instance.playersCanMove = true;
 	}
 	
 	private void OnTriggerEnter2D (Collider2D other) {
@@ -206,9 +211,6 @@ public class Player : MovingObject {
 		}
 
 		if (other.CompareTag("Stairs")) {
-			//StartCoroutine(GameManager.Instance.LoadNextFloor());
-
-			
 			if (_onStairs) {
 				return;
 			}
@@ -220,6 +222,17 @@ public class Player : MovingObject {
 			return;
 		}
 
+		if (other.CompareTag("Checkpoint")) {
+
+			if (_lastCheckpointPosition != other.transform.position) {
+			   _popUp.text = "Checkpoint reached. Saved!";
+			}
+			
+			_lastCheckpointPosition = other.transform.position;
+			
+			return;
+		}
+		
 		// collectibles
 		
 		if(other.CompareTag("Food")) {
@@ -269,14 +282,25 @@ public class Player : MovingObject {
 			_healthText.text = "-" + loss + " Health: " + _parameters.Health;
 		
 		ChangeToDamagedSprite();
-		CheckIfGameOver ();
+		CheckDeadPlayer ();
 	}
 
-	private void CheckIfGameOver () {
+	private void CheckDeadPlayer () {
 		if (_parameters.Health <= 0) {
-			enabled = false;
-			GameManager.Instance.GameOver ();
+			//enabled = false;
+			//GameManager.Instance.GameOver ();
+			RespawnAtCheckpoint();
 		}
+	}
+
+	private void RespawnAtCheckpoint() {
+		transform.position = _lastCheckpointPosition;
+		GameManager.Instance.ReturnToCheckpoint();
+	}
+
+	private IEnumerator WaitTillNextMove() {
+		yield return new WaitForSeconds(0.2f);
+		GameManager.Instance.playersCanMove = true;
 	}
 }
 

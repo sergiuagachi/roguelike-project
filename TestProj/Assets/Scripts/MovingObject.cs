@@ -5,7 +5,6 @@ public abstract class MovingObject : PhysicsObject {
 	
 	protected float MoveTime;			//Time it will take object to move, in seconds.
 	private LayerMask _blockingLayer;			//Layer on which collision will be checked.
-	//public LayerMask _blockingLayer;
 	
 	private float _inverseMoveTime;			//Used to make movement more efficient.
 
@@ -81,10 +80,9 @@ public abstract class MovingObject : PhysicsObject {
 		}
 
 		if (this is Player) {
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.2f);
+			GameManager.Instance.playersCanMove = true;
 		}
-
-		GameManager.Instance.playersCanMove = true;
 	}
 
 	private bool Move (int xDir, int yDir, out RaycastHit2D hit)
