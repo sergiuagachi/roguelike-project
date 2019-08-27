@@ -2,23 +2,34 @@
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class Player : MovingObject {
 
 	public static Player Instance;
-	
-	private const int Food1Health = 10;
-	private const int Food2Health = 20;
 
-	private const int Drink1Energy = 10;
-	private const int Drink2Energy = 20;
+	private readonly int _defaultHealth = 100;
+	//todo: to be used when reaching ending
+	private int _deathCounter;
+
+	private const float MoveDelay = 0.2f;
+
+	private const int ConsumableHealValue = 40;
 
 	private bool _onStairs;
 
 	private Vector3 _lastCheckpointPosition;
+
+	public class PickedFood {
+		public readonly int Floor;
+		public Vector3 position;
+
+		public PickedFood(int floor, Vector3 position) {
+			Floor = floor;
+			this.position = position;
+		}
+	}
 	
 	[Serializable]
 	public class Item {
@@ -39,6 +50,8 @@ public class Player : MovingObject {
 		public int armor;
 		
 		public int blockChance;
+
+		public int storedFood;
 		
 		public List<Item> items = new List<Item>{
 			new Item("Sword", false),
@@ -54,16 +67,19 @@ public class Player : MovingObject {
 			blockChance = 0;
 			AttackPoints = 50;
 			playerLevel = 1;
+			storedFood = 0;
 		}
 	}
 	
 	public ExtendedParameters parameters;
+	public List<PickedFood> pickedFood = new List<PickedFood>();
 	
 	private Text _levelText;
 	private Text _healthText;
 	private Text _experienceText;
 	private Text _armorText;
 	private Text _popUp;
+	private Text _storedFood;
 
 	private Animator _animator;
 	private static readonly int PlayerChop = Animator.StringToHash("playerChop");
@@ -97,28 +113,45 @@ public class Player : MovingObject {
 		_armorText = GameObject.Find("ArmorText").GetComponent<Text>();
 		_experienceText = GameObject.Find("ExperienceText").GetComponent<Text>();
 		_popUp = GameObject.Find("PopUp").GetComponent<Text>();
+		_storedFood = GameObject.Find("StoredFoodText").GetComponent<Text>();
 		
 		_levelText.text = "Level: " + parameters.playerLevel;
 		_healthText.text = "Health: " + parameters.Health;
 		_armorText.text = "Armor: " + parameters.armor;
 		_experienceText.text = "Experience: " + parameters.experience;
 		_popUp.text = "";
+		_storedFood.text = "Stored Food: " + parameters.storedFood;
 	}
 	
 	private void Update () {
 		
 		if(!GameManager.Instance.playersCanMove) return;
 
-		var horizontal = (int) (Input.GetAxisRaw ("Horizontal"));
-		var vertical = (int) (Input.GetAxisRaw ("Vertical"));
-		
-		// prevent diagonal movement
-		if(horizontal != 0) {
-			vertical = 0;
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			if (parameters.storedFood > 0) {
+				Heal(ConsumableHealValue);
+				parameters.storedFood--;
+			
+				_storedFood.text = "Stored Food: " + parameters.storedFood;
+			}
+			
+			StartCoroutine(WaitTillNextMove());
 		}
-		
-		if(horizontal != 0 || vertical != 0) {
-			AttemptMove(horizontal, vertical);
+
+		else {
+
+			var horizontal = (int) (Input.GetAxisRaw("Horizontal"));
+			var vertical = (int) (Input.GetAxisRaw("Vertical"));
+
+			// prevent diagonal movement
+			if (horizontal != 0) {
+				vertical = 0;
+			}
+
+			if (horizontal != 0 || vertical != 0) {
+				AttemptMove(horizontal, vertical);
+			}
 		}
 	}
 
@@ -128,7 +161,7 @@ public class Player : MovingObject {
 
 	private void CheckLevel(int experienceGained) {
 
-		parameters.experience += (experienceGained % parameters.playerLevel);
+		parameters.experience += experienceGained / parameters.playerLevel;
 		
 		if (parameters.experience < 100) return;
 
@@ -158,76 +191,86 @@ public class Player : MovingObject {
 	
 	protected override void OnCantMove(MonoBehaviour component) {
 		var hitObj = component;
-
-		if (hitObj) {
-			if (hitObj is Enemy enemy) {
-				
+		if (!hitObj) return;
+		
+		switch (hitObj) {
+			
+			case Enemy enemy: {
 				if (!HasItem("Sword")) {
 					_popUp.text = "You can't attack enemies without a sword";
 				}
 				else {
 					enemy.TakeDamage(parameters.AttackPoints);
-					TakeDamage(enemy.Parameters.AttackPoints);
+					TakeDamage(enemy.parameters.AttackPoints);
 
 					if (enemy.isActiveAndEnabled == false) {
-						CheckLevel(enemy.Parameters.ExperienceGranted);
+						CheckLevel(enemy.parameters.experienceGranted);
 					}
 					
 					_animator.SetTrigger(PlayerChop);
 				}
+				break;
 			}
 
-			if (hitObj is Wall wall) {
-				// todo: remove duplicate code
-
+			// todo: remove duplicate code
+			case Wall wall: {
 				switch (wall.type) {
-					case Wall.Type.Dirt:
-						if (!HasItem("Shovel")) {
-							_popUp.text = "You can't pass without a Shovel";
-						}
-						else {
-							_animator.SetTrigger(PlayerChop);
-							wall.gameObject.SetActive(false);
-							wall.enabled = false;
-						}
-						break;
-					case Wall.Type.Stone:
-						if (!HasItem("Pickaxe")) {
-							_popUp.text = "You can't pass without a Pickaxe";	
-						}
-						else {
-							_animator.SetTrigger(PlayerChop);
-							wall.gameObject.SetActive(false);
-							wall.enabled = false;
-						}
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
+					
+					case Wall.Type.Dirt: {
+					if (!HasItem("Shovel")) {
+						_popUp.text = "You can't pass without a Shovel";
+					}
+					else {
+						_animator.SetTrigger(PlayerChop);
+						wall.gameObject.SetActive(false);
+						wall.enabled = false;
+					}
+
+					break;
+					}
+
+					case Wall.Type.Stone: {
+					if (!HasItem("Pickaxe")) {
+						_popUp.text = "You can't pass without a Pickaxe";	
+					}
+					else {
+						_animator.SetTrigger(PlayerChop);
+						wall.gameObject.SetActive(false);
+						wall.enabled = false;
+					}
+					break;
+					}
+
+					default: {
+					throw new ArgumentOutOfRangeException();
+					}
 				}
+				break;
 			}
 
-			if (hitObj is Sign sign) {
+			case Sign sign: {
 				_popUp.text = sign.signText;
+				break;
 			}
 
-			if (hitObj is Chest chest) {
-
+			case Chest chest: {
 				if (!HasItem("Key")) {
 					_popUp.text = "You need a key to open the chest";
 				}
 				else {
-					if (chest.IsOpen) {
-						// end the game, will delete this line
+					if(chest.IsOpen){
+						//todo: end the game, will delete this line
 						_popUp.text = "You won!";
 					}
 					else {
-						chest.Open();	
+						chest.Open();
 					}
 				}
+				break;
 			}
-			
-			StartCoroutine(WaitTillNextMove());
 		}
+
+		StartCoroutine(WaitTillNextMove());
 	}
 	
 	private void OnTriggerEnter2D (Collider2D other) {
@@ -253,7 +296,10 @@ public class Player : MovingObject {
 			}
 
 			_onStairs = true;
+			
 			var stairs = other.GetComponent<Stairs>();
+			SpriteRenderer.flipX = stairs.spriteRenderer.flipX;
+			
 			stairs.ChangeLevel();
 
 			return;
@@ -273,21 +319,34 @@ public class Player : MovingObject {
 		// collectibles
 		
 		if(other.CompareTag("Food")) {
-			var healthPerFood = other.name.Equals("Food1") ? Food1Health : Food2Health;
 
-			parameters.Health = Math.Min(100, parameters.Health + healthPerFood);
-			_healthText.text = "+" + healthPerFood + " Health: " + parameters.Health;
-		}
-		
-		else if(other.CompareTag("Drink")) {
-			var energyPerDrink = other.name.Equals("Drink1") ? Drink1Energy : Drink2Energy;
+			var food = other.GetComponent<Food>();
+
+			if (food.storable) {
+				parameters.storedFood++;
+				_storedFood.text = "Stored Food: " + parameters.storedFood;
+			}
+			else {
+				var healthPerFood = food.healthValue;
+
+				Heal(healthPerFood);
+					
+			}
 			
-			parameters.experience = Math.Min(100, parameters.experience + energyPerDrink);
-			_experienceText.text = "+" + energyPerDrink + " Experience: " + parameters.experience;
+				
+			pickedFood.Add(food.PickedUp());
 		}
 
 		else if (other.CompareTag("Sword")) {
 			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Sword"))].isActive = true;
+		}
+		
+		else if (other.CompareTag("Pickaxe")) {
+			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Pickaxe"))].isActive = true;
+		}
+		
+		else if (other.CompareTag("Shovel")) {
+			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Shovel"))].isActive = true;
 		}
 		
 		else if (other.CompareTag("Key")) {
@@ -331,13 +390,22 @@ public class Player : MovingObject {
 	}
 
 	private void RespawnAtCheckpoint() {
+
+		_deathCounter++;
+		parameters.Health = _defaultHealth;
+		
 		transform.position = _lastCheckpointPosition;
 		GameManager.Instance.ReturnToCheckpoint();
 	}
 
 	private IEnumerator WaitTillNextMove() {
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(MoveDelay);
 		GameManager.Instance.playersCanMove = true;
+	}
+
+	private void Heal(int amount) {
+		parameters.Health = Math.Min(100, parameters.Health + amount);
+		_healthText.text = "+" + amount + " Health: " + parameters.Health;
 	}
 }
 

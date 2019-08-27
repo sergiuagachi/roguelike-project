@@ -17423,7 +17423,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1166693711
 MonoBehaviour:
@@ -17439,6 +17439,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 7437836630066240613, guid: 72d2137e158a1fd4f96894eb9e92c6ea,
     type: 3}
+  player: {fileID: 0}
 --- !u!114 &1166693712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18904,6 +18905,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 273587970025406912, guid: 6a99650493d39ef48a6882710298f901,
+        type: 3}
+      propertyPath: healthText
+      value: 
+      objectReference: {fileID: 1543341882}
+    - target: {fileID: 273587970025406912, guid: 6a99650493d39ef48a6882710298f901,
+        type: 3}
+      propertyPath: energyText
+      value: 
+      objectReference: {fileID: 85910866}
+    - target: {fileID: 273587970025406912, guid: 6a99650493d39ef48a6882710298f901,
+        type: 3}
+      propertyPath: armorText
+      value: 
+      objectReference: {fileID: 1956921441}
     - target: {fileID: 376377981079194837, guid: 6a99650493d39ef48a6882710298f901,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -18959,21 +18975,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 273587970025406912, guid: 6a99650493d39ef48a6882710298f901,
-        type: 3}
-      propertyPath: healthText
-      value: 
-      objectReference: {fileID: 1543341882}
-    - target: {fileID: 273587970025406912, guid: 6a99650493d39ef48a6882710298f901,
-        type: 3}
-      propertyPath: energyText
-      value: 
-      objectReference: {fileID: 85910866}
-    - target: {fileID: 273587970025406912, guid: 6a99650493d39ef48a6882710298f901,
-        type: 3}
-      propertyPath: armorText
-      value: 
-      objectReference: {fileID: 1956921441}
     - target: {fileID: 376377981079194838, guid: 6a99650493d39ef48a6882710298f901,
         type: 3}
       propertyPath: m_SortingLayerID
@@ -20598,7 +20599,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1358358897
 MonoBehaviour:
   m_ObjectHideFlags: 0

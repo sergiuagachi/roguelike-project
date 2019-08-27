@@ -17,6 +17,8 @@ TagManager:
   - Chest
   - StairsUp
   - Checkpoint
+  - Pickaxe
+  - Shovel
   layers:
   - Default
   - TransparentFX

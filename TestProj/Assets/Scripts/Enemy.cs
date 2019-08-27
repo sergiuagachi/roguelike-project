@@ -1,38 +1,39 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Enemy : PhysicsObject{
 
     private Animator _animator;
 	private static readonly int EnemyAttack = Animator.StringToHash("enemyAttack");
 
+	[Serializable]
 	public class ExtendedParameters : DefaultParameters {
-		public readonly int ExperienceGranted;
+		public int experienceGranted;
 
 		public ExtendedParameters() {
 			Health = 100;
 			AttackPoints = 20;
-			ExperienceGranted = 100;//Health % 10;
+			experienceGranted = Health % 10; //100;//
 		}
 	}
 
-	public ExtendedParameters Parameters { get; private set; }
+	public ExtendedParameters parameters;
 
 	protected override void Start () {
 		_animator = GetComponent<Animator> ();
-
-		Parameters = new ExtendedParameters();
-		
 		
 		base.Start ();
 	}
 
 	public override void TakeDamage(int loss) {
-		_animator.SetTrigger(EnemyAttack);
-		Parameters.Health -= loss;
+		// todo: some enemies dont have animations
+		if(_animator)
+			_animator.SetTrigger(EnemyAttack);
+		parameters.Health -= loss;
 		
 		ChangeToDamagedSprite();
 
-		if (Parameters.Health <= 0) {
+		if (parameters.Health <= 0) {
 			gameObject.SetActive(false);
 			enabled = false;
 		}

@@ -1,18 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Food : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+public class Food : MonoBehaviour {
+    
+    
+    public int healthValue;
+    public bool storable;
+
+    private void Awake() {
+        GameManager.Instance.AddFood(this);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public Player.PickedFood PickedUp() {
+        return new Player.PickedFood(GameManager.Instance.Floor, transform.position);
     }
 }

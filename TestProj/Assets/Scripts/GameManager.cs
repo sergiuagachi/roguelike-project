@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
 	public static GameManager Instance;
+	
 	public bool playersCanMove = true;
 	private int _playerDamage;
 	
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour {
 	private int _lastCheckpointFloor = 1;
 
 	public int Floor => _floor;
+	private readonly List<Food> _foodOnFloor = new List<Food>();
 
 	private void Awake() {
 		if (Instance == null) {
@@ -36,15 +38,32 @@ public class GameManager : MonoBehaviour {
 	}
 
 	private void LoadFloor(int floor) {
+		_foodOnFloor.Clear();
 		SceneManager.LoadScene("Floor" + floor, LoadSceneMode.Single);
 		SceneManager.sceneLoaded += OnSceneLoaded;
 	}
 
 	private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1) {
 		Player.Instance.UpdateTexts();
+		
+		foreach(var food in Player.Instance.pickedFood) {
+			if (food.Floor == _floor) {
+				foreach (var instace in _foodOnFloor) {
+					if (instace.transform.position == food.position) {
+						instace.gameObject.SetActive(false);
+						enabled = false;
+					}
+				}
+			}
+		}
 	}
 
 	public void ReturnToCheckpoint() {
 		LoadFloor(_lastCheckpointFloor);
+		_floor = _lastCheckpointFloor;
+	}
+
+	public void AddFood(Food food) {
+		_foodOnFloor.Add(food);
 	}
 }
