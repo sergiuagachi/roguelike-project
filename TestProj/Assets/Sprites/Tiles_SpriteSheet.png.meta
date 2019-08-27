@@ -20,6 +20,9 @@ TextureImporter:
   - first:
       213: -1354166117818413020
     second: Tiles_SpriteSheet_5
+  - first:
+      213: -5914887151112022747
+    second: Tiles_SpriteSheet_6
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -226,7 +229,7 @@ TextureImporter:
         width: 32
         height: 32
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -234,6 +237,27 @@ TextureImporter:
       bones: []
       spriteID: 8441a9fef339ca3439f290c51e412011
       internalID: -1354166117818413020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tiles_SpriteSheet_6
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70315d0c6a395914c99dcc89013464a5
+      internalID: -5914887151112022747
       vertices: []
       indices: 
       edges: []

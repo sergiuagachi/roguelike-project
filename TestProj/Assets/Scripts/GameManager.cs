@@ -28,11 +28,11 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void LoadNextFloor() {
-		LoadFloor(_floor++);
+		LoadFloor(++_floor);
 	}
 	
 	public void LoadPreviousFloor() {
-		LoadFloor(_floor--);
+		LoadFloor(--_floor);
 	}
 
 	private void LoadFloor(int floor) {

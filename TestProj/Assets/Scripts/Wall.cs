@@ -1,14 +1,12 @@
-﻿public class Wall : PhysicsObject
+﻿using UnityEngine;
+
+public class Wall : MonoBehaviour
 {
-    DefaultParameters _parameters = new DefaultParameters();
-    
-    protected override void Start() {
-        _parameters.Health = 6;
-        
-        base.Start();
+    public enum Type {
+        Dirt,
+        Stone,
+        //todo: add more
     }
 
-    public override void TakeDamage(int loss) {
-        throw new System.NotImplementedException();
-    }
+    public Type type;
 }

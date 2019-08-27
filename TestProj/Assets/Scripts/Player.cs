@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -32,29 +33,31 @@ public class Player : MovingObject {
 
 	[Serializable]
 	public class ExtendedParameters : DefaultParameters {
-		public int PlayerLevel;
-		public int Experience;
+		public int playerLevel;
+		public int experience;
 
-		public int Armor;
+		public int armor;
 		
-		public int BlockChance;
+		public int blockChance;
 		
-		public List<Item> powerups = new List<Item>{
+		public List<Item> items = new List<Item>{
 			new Item("Sword", false),
 			new Item("Key", false),
-			new Item("Treasure", false)
+			new Item("Treasure", false),
+			new Item("Shovel", false),
+			new Item("Pickaxe", false),
 		};
 
 		public ExtendedParameters() {
 			Health = 100;
-			Armor = 0;
-			BlockChance = 0;
+			armor = 0;
+			blockChance = 0;
 			AttackPoints = 50;
-			PlayerLevel = 1;
+			playerLevel = 1;
 		}
 	}
 	
-	public ExtendedParameters _parameters;
+	public ExtendedParameters parameters;
 	
 	private Text _levelText;
 	private Text _healthText;
@@ -78,7 +81,7 @@ public class Player : MovingObject {
 		MoveTime = 0.1f;
 		
 		_animator = GetComponent<Animator>();
-		_parameters = new ExtendedParameters();
+		parameters = new ExtendedParameters();
 
 		UpdateTexts();
 
@@ -95,10 +98,10 @@ public class Player : MovingObject {
 		_experienceText = GameObject.Find("ExperienceText").GetComponent<Text>();
 		_popUp = GameObject.Find("PopUp").GetComponent<Text>();
 		
-		_levelText.text = "Level: " + _parameters.PlayerLevel;
-		_healthText.text = "Health: " + _parameters.Health;
-		_armorText.text = "Armor: " + _parameters.Armor;
-		_experienceText.text = "Experience: " + _parameters.Experience;
+		_levelText.text = "Level: " + parameters.playerLevel;
+		_healthText.text = "Health: " + parameters.Health;
+		_armorText.text = "Armor: " + parameters.armor;
+		_experienceText.text = "Experience: " + parameters.experience;
 		_popUp.text = "";
 	}
 	
@@ -120,20 +123,20 @@ public class Player : MovingObject {
 	}
 
 	private bool HasItem(string powerupName) {	
-		return _parameters.powerups[_parameters.powerups.FindIndex(x => x.name.Equals(powerupName))].isActive;
+		return parameters.items[parameters.items.FindIndex(x => x.name.Equals(powerupName))].isActive;
 	}
 
 	private void CheckLevel(int experienceGained) {
 
-		_parameters.Experience += (experienceGained % _parameters.PlayerLevel);
+		parameters.experience += (experienceGained % parameters.playerLevel);
 		
-		if (_parameters.Experience < 100) return;
+		if (parameters.experience < 100) return;
 
-		_parameters.Experience -= 100;
-		_parameters.PlayerLevel++;
+		parameters.experience -= 100;
+		parameters.playerLevel++;
 
-		_parameters.AttackPoints += GameManager.Instance.attackPointsPerLevel;
-		_parameters.Armor += GameManager.Instance.armorPerLevel;
+		parameters.AttackPoints += GameManager.Instance.attackPointsPerLevel;
+		parameters.armor += GameManager.Instance.armorPerLevel;
 	}
 	
 	protected override void AttemptMove (int xDir, int yDir) {
@@ -143,10 +146,10 @@ public class Player : MovingObject {
 		
 		base.AttemptMove(xDir, yDir);
 
-		_levelText.text = "Level: " + _parameters.PlayerLevel;
-		_healthText.text = "Health: " + _parameters.Health;
-		_armorText.text = "Armor: " + _parameters.Armor;
-		_experienceText.text = "Experience: " + _parameters.Experience;
+		_levelText.text = "Level: " + parameters.playerLevel;
+		_healthText.text = "Health: " + parameters.Health;
+		_armorText.text = "Armor: " + parameters.armor;
+		_experienceText.text = "Experience: " + parameters.experience;
 		
 		if (HitOuterWall) {
 			GameManager.Instance.playersCanMove = true;
@@ -163,7 +166,7 @@ public class Player : MovingObject {
 					_popUp.text = "You can't attack enemies without a sword";
 				}
 				else {
-					enemy.TakeDamage(_parameters.AttackPoints);
+					enemy.TakeDamage(parameters.AttackPoints);
 					TakeDamage(enemy.Parameters.AttackPoints);
 
 					if (enemy.isActiveAndEnabled == false) {
@@ -174,8 +177,33 @@ public class Player : MovingObject {
 				}
 			}
 
-			if (hitObj is Wall) {
-				// too: if i have shovel/pick axe i can/t destroy some walls
+			if (hitObj is Wall wall) {
+				// todo: remove duplicate code
+
+				switch (wall.type) {
+					case Wall.Type.Dirt:
+						if (!HasItem("Shovel")) {
+							_popUp.text = "You can't pass without a Shovel";
+						}
+						else {
+							_animator.SetTrigger(PlayerChop);
+							wall.gameObject.SetActive(false);
+							wall.enabled = false;
+						}
+						break;
+					case Wall.Type.Stone:
+						if (!HasItem("Pickaxe")) {
+							_popUp.text = "You can't pass without a Pickaxe";	
+						}
+						else {
+							_animator.SetTrigger(PlayerChop);
+							wall.gameObject.SetActive(false);
+							wall.enabled = false;
+						}
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
 
 			if (hitObj is Sign sign) {
@@ -225,7 +253,7 @@ public class Player : MovingObject {
 			}
 
 			_onStairs = true;
-			Stairs stairs = other.GetComponent<Stairs>();
+			var stairs = other.GetComponent<Stairs>();
 			stairs.ChangeLevel();
 
 			return;
@@ -247,23 +275,23 @@ public class Player : MovingObject {
 		if(other.CompareTag("Food")) {
 			var healthPerFood = other.name.Equals("Food1") ? Food1Health : Food2Health;
 
-			_parameters.Health = Math.Min(100, _parameters.Health + healthPerFood);
-			_healthText.text = "+" + healthPerFood + " Health: " + _parameters.Health;
+			parameters.Health = Math.Min(100, parameters.Health + healthPerFood);
+			_healthText.text = "+" + healthPerFood + " Health: " + parameters.Health;
 		}
 		
 		else if(other.CompareTag("Drink")) {
 			var energyPerDrink = other.name.Equals("Drink1") ? Drink1Energy : Drink2Energy;
 			
-			_parameters.Experience = Math.Min(100, _parameters.Experience + energyPerDrink);
-			_experienceText.text = "+" + energyPerDrink + " Experience: " + _parameters.Experience;
+			parameters.experience = Math.Min(100, parameters.experience + energyPerDrink);
+			_experienceText.text = "+" + energyPerDrink + " Experience: " + parameters.experience;
 		}
 
 		else if (other.CompareTag("Sword")) {
-			_parameters.powerups[_parameters.powerups.FindIndex(x => x.name.Equals("Sword"))].isActive = true;
+			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Sword"))].isActive = true;
 		}
 		
 		else if (other.CompareTag("Key")) {
-			_parameters.powerups[_parameters.powerups.FindIndex(x => x.name.Equals("Key"))].isActive = true;
+			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Key"))].isActive = true;
 		}
 		
 		other.gameObject.SetActive (false);
@@ -275,27 +303,27 @@ public class Player : MovingObject {
 
 	public override void TakeDamage (int loss) {
 
-		loss = Math.Max(0, loss - _parameters.Armor);
+		loss = Math.Max(0, loss - parameters.armor);
 		
 		_animator.SetTrigger (PlayerHit);
 
 		// can block the damage
 		var willBlock = Random.Range(0, 100);
-		if (_parameters.BlockChance > willBlock) {
+		if (parameters.blockChance > willBlock) {
 			return;
 		}
 
-		_parameters.Health -= loss;
+		parameters.Health -= loss;
 		
 		if(loss > 0)
-			_healthText.text = "-" + loss + " Health: " + _parameters.Health;
+			_healthText.text = "-" + loss + " Health: " + parameters.Health;
 		
 		ChangeToDamagedSprite();
 		CheckDeadPlayer ();
 	}
 
 	private void CheckDeadPlayer () {
-		if (_parameters.Health <= 0) {
+		if (parameters.Health <= 0) {
 			//enabled = false;
 			//GameManager.Instance.GameOver ();
 			RespawnAtCheckpoint();
