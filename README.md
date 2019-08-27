@@ -1,1 +1,3 @@
-some random text
+TODO list:
+    - add checkpoint sprite;
+    - create more levels;
