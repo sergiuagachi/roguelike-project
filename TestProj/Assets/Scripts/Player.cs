@@ -32,8 +32,8 @@ public class Player : MovingObject {
 
 	[Serializable]
 	public class ExtendedParameters : DefaultParameters {
-		public int Experience;
 		public int PlayerLevel;
+		public int Experience;
 
 		public int Armor;
 		
@@ -41,7 +41,8 @@ public class Player : MovingObject {
 		
 		public List<Item> powerups = new List<Item>{
 			new Item("Sword", false),
-			new Item("Key", false)
+			new Item("Key", false),
+			new Item("Treasure", false)
 		};
 
 		public ExtendedParameters() {
@@ -170,7 +171,6 @@ public class Player : MovingObject {
 					}
 					
 					_animator.SetTrigger(PlayerChop);
-					StartCoroutine(WaitTillNextMove());
 				}
 			}
 
@@ -197,6 +197,8 @@ public class Player : MovingObject {
 					}
 				}
 			}
+			
+			StartCoroutine(WaitTillNextMove());
 		}
 	}
 	
@@ -205,8 +207,15 @@ public class Player : MovingObject {
 		// uncollectibles
 		
 		if(other.CompareTag("Exit")) {
-			//StartCoroutine(GameManager.Instance.LoadNextFloor());
-			enabled = false;
+			if (HasItem("Treasure")) {
+				// end game
+				enabled = false;
+			}
+			else {
+				_popUp.text = "Without the treasure, the exit is closed";
+			}
+			
+			
 			return;
 		}
 
@@ -232,7 +241,7 @@ public class Player : MovingObject {
 			
 			return;
 		}
-		
+
 		// collectibles
 		
 		if(other.CompareTag("Food")) {

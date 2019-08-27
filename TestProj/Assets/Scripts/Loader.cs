@@ -7,7 +7,7 @@ public class Loader : MonoBehaviour {
 	void Awake () {
 		
 		if (Player.Instance == null) {
-			Instantiate(player, new Vector3(5, 8, 0), Quaternion.identity);
+			Instantiate(player, new Vector3(2, 1, 0), Quaternion.identity);
 		}
 		
 		if (GameManager.Instance == null) {
