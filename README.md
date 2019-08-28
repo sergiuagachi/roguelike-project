@@ -1,4 +1,16 @@
 TODO list:
+	- android features
+		- tap to move to adjacent square
+		- heal button
+		- reposition labels to absolute anchored positions
+		- scaled main menu
+		
+	- all platforms:
+		- more user friendly introduction stuff
+		- hover over to see some info
+		- inventory like on the right side
+		- quest system like on the right side
+
     - add endings
 		- if deathCounter >= 1 then badEnding
 		- else good ending

@@ -201,10 +201,12 @@ public class Player : MovingObject {
 				}
 				else {
 					enemy.TakeDamage(parameters.AttackPoints);
-					TakeDamage(enemy.parameters.AttackPoints);
-
+					
 					if (enemy.isActiveAndEnabled == false) {
 						CheckLevel(enemy.parameters.experienceGranted);
+					}
+					else {
+						TakeDamage(enemy.parameters.AttackPoints);	
 					}
 					
 					_animator.SetTrigger(PlayerChop);
