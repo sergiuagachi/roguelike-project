@@ -78,6 +78,7 @@ public class Player : MovingObject {
 	private Text _healthText;
 	private Text _experienceText;
 	private Text _armorText;
+	private Text _damageText;
 	private Text _popUp;
 	private Text _storedFood;
 
@@ -111,6 +112,7 @@ public class Player : MovingObject {
 		_levelText = GameObject.Find("LevelText").GetComponent<Text>();
 		_healthText = GameObject.Find("HealthText").GetComponent<Text>();
 		_armorText = GameObject.Find("ArmorText").GetComponent<Text>();
+		_damageText = GameObject.Find("DamageText").GetComponent<Text>();
 		_experienceText = GameObject.Find("ExperienceText").GetComponent<Text>();
 		_popUp = GameObject.Find("PopUp").GetComponent<Text>();
 		_storedFood = GameObject.Find("StoredFoodText").GetComponent<Text>();
@@ -118,9 +120,10 @@ public class Player : MovingObject {
 		_levelText.text = "Level: " + parameters.playerLevel;
 		_healthText.text = "Health: " + parameters.Health;
 		_armorText.text = "Armor: " + parameters.armor;
+		_damageText.text = "Damage: " + parameters.AttackPoints;
 		_experienceText.text = "Experience: " + parameters.experience;
 		_popUp.text = "";
-		_storedFood.text = "Stored Food: " + parameters.storedFood;
+		_storedFood.text = "Stored food: " + parameters.storedFood;
 	}
 	
 	private void Update () {
@@ -133,7 +136,7 @@ public class Player : MovingObject {
 				Heal(ConsumableHealValue);
 				parameters.storedFood--;
 			
-				_storedFood.text = "Stored Food: " + parameters.storedFood;
+				_storedFood.text = "Stored food: " + parameters.storedFood;
 			}
 			
 			StartCoroutine(WaitTillNextMove());
@@ -225,6 +228,7 @@ public class Player : MovingObject {
 		_levelText.text = "Level: " + parameters.playerLevel;
 		_healthText.text = "Health: " + parameters.Health;
 		_armorText.text = "Armor: " + parameters.armor;
+		_damageText.text = "Damage: " + parameters.AttackPoints;
 		_experienceText.text = "Experience: " + parameters.experience;
 		
 		if (HitOuterWall) {
@@ -300,7 +304,7 @@ public class Player : MovingObject {
 
 			case Chest chest: {
 				if (!HasItem("Key")) {
-					_popUp.text = "You need a key to open the chest";
+					_popUp.text = "Locked! You need a key to open the chest";
 				}
 				else {
 					if(chest.IsOpen){
@@ -369,7 +373,7 @@ public class Player : MovingObject {
 
 			if (food.storable) {
 				parameters.storedFood++;
-				_storedFood.text = "Stored Food: " + parameters.storedFood;
+				_storedFood.text = "Stored food: " + parameters.storedFood;
 			}
 			else {
 				var healthPerFood = food.healthValue;

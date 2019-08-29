@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Intro : MonoBehaviour
 {
     private const float StartDelay = 3;
-    private const float ChangeTextDelay = 2;
+    private const float ChangeTextDelay = 3;
     public Text visibleText;
 
     private const string Text1 = "You go inside the tower, but the door closes behind";
