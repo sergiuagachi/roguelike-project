@@ -5,18 +5,20 @@ public abstract class PhysicsObject : MonoBehaviour
 	public class DefaultParameters {
 		public int Health;
 		public int AttackPoints;
+
+		protected DefaultParameters(int health, int attackPoints) {
+			Health = health;
+			AttackPoints = attackPoints;
+		}
 	}
 
-	protected BoxCollider2D BoxCollider2D;
 	protected Rigidbody2D Rb2D;
 	
 	public Sprite damagedSprite;
 	protected SpriteRenderer SpriteRenderer;
 	
 	protected virtual void Start () {
-		BoxCollider2D = GetComponent <BoxCollider2D> ();
 		Rb2D = GetComponent <Rigidbody2D> ();
-		
 		SpriteRenderer = GetComponent<SpriteRenderer> ();
 	}
 
@@ -26,4 +28,6 @@ public abstract class PhysicsObject : MonoBehaviour
 	}
 	
 	public abstract void TakeDamage(int loss);
+
+	public abstract int GetHealth();
 }

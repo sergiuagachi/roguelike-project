@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Vector3 = UnityEngine.Vector3;
 
 public class GameManager : MonoBehaviour {
 
@@ -13,6 +15,8 @@ public class GameManager : MonoBehaviour {
 	public int attackPointsPerLevel = 25;
 	
 	private int _floor = 1;
+
+	private Vector3 _lastCheckpointPosition;
 	private int _lastCheckpointFloor = 1;
 
 	public int Floor => _floor;
@@ -49,7 +53,7 @@ public class GameManager : MonoBehaviour {
 		foreach(var food in Player.Instance.pickedFood) {
 			if (food.Floor == _floor) {
 				foreach (var instace in _foodOnFloor) {
-					if (instace.transform.position == food.position) {
+					if (instace.transform.position == food.Position) {
 						instace.gameObject.SetActive(false);
 						enabled = false;
 					}
@@ -58,9 +62,18 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public void ActivateCheckpoint(Transform checkpoint) {
+		_lastCheckpointPosition = checkpoint.position;
+		_lastCheckpointFloor = _floor;
+	}
+
+	public Vector3 GetLastCheckpointPosition() {
+		return _lastCheckpointPosition;
+	}
+	
 	public void ReturnToCheckpoint() {
-		LoadFloor(_lastCheckpointFloor);
-		_floor = _lastCheckpointFloor;
+		Player.Instance.transform.position = _lastCheckpointPosition;
+		LoadFloor(_floor = _lastCheckpointFloor);
 	}
 
 	public void AddFood(Food food) {

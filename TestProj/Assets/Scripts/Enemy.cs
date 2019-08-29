@@ -10,9 +10,7 @@ public class Enemy : PhysicsObject{
 	public class ExtendedParameters : DefaultParameters {
 		public int experienceGranted;
 
-		public ExtendedParameters() {
-			Health = 100;
-			AttackPoints = 20;
+		public ExtendedParameters() : base(100, 20){
 			experienceGranted = Health % 10; //100;//
 		}
 	}
@@ -20,9 +18,9 @@ public class Enemy : PhysicsObject{
 	public ExtendedParameters parameters;
 
 	protected override void Start () {
-		_animator = GetComponent<Animator> ();
-		
 		base.Start ();
+		
+		_animator = GetComponent<Animator> ();
 	}
 
 	public override void TakeDamage(int loss) {
@@ -37,5 +35,9 @@ public class Enemy : PhysicsObject{
 			gameObject.SetActive(false);
 			enabled = false;
 		}
+	}
+
+	public override int GetHealth() {
+		return parameters.Health;
 	}
 }
