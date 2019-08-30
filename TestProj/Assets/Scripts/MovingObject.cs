@@ -81,7 +81,7 @@ public abstract class MovingObject : PhysicsObject {
 
 		if (this is Player) {
 			yield return new WaitForSeconds(0.2f);
-			GameManager.Instance.playersCanMove = true;
+			GameManager.Instance.playerCanMove = true;
 		}
 	}
 

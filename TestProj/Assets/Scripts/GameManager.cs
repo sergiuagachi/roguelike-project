@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager Instance;
 	
-	public bool playersCanMove = true;
+	public bool playerCanMove = true;
 	private int _playerDamage;
 	
 	public int armorPerLevel = 10;
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1) {
-		Player.Instance.UpdateTexts();
+		Player.Instance.GetTexts();
 		
 		foreach(var food in Player.Instance.pickedFood) {
 			if (food.Floor == _floor) {

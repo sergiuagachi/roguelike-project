@@ -70,9 +70,27 @@ public class Player : MovingObject {
 			storedFood = 0;
 		}
 	}
+
+	private class Quest {
+		public readonly string Info;
+		public bool Discovered;
+		public bool Completed;
+
+		public Quest(string info, bool discovered) {
+			Info = info;
+			Discovered = discovered;
+		}
+	}
 	
 	public ExtendedParameters parameters;
 	public List<PickedFood> pickedFood = new List<PickedFood>();
+	private readonly List<Quest> _quests = new List<Quest> {
+		new Quest("Find the treasure", false),
+		new Quest("Find the key", false),
+		new Quest("Find the shovel", false),
+		new Quest("Find the pickaxe", false),
+		new Quest("Find the sword", false),
+	};
 	
 	private Text _levelText;
 	private Text _healthText;
@@ -80,13 +98,14 @@ public class Player : MovingObject {
 	private Text _armorText;
 	private Text _damageText;
 	private Text _popUp;
-	private Text _storedFood;
+	private Text _questLog;
 
 	private Animator _animator;
 	private static readonly int PlayerChop = Animator.StringToHash("playerChop");
 	private static readonly int PlayerHit = Animator.StringToHash("playerHit");
 	
 	protected override void Start() {
+		base.Start();
 		
 		if (Instance == null) {
 			Instance = this;
@@ -100,43 +119,58 @@ public class Player : MovingObject {
 		_animator = GetComponent<Animator>();
 		parameters = new ExtendedParameters();
 
-		UpdateTexts();
+		GetTexts();
 
 		GameManager.Instance.ActivateCheckpoint(transform);
 		
-		base.Start();
 		DontDestroyOnLoad(gameObject);
 	}
 
-	public void UpdateTexts() {
+	public void GetTexts() {
 		_levelText = GameObject.Find("LevelText").GetComponent<Text>();
 		_healthText = GameObject.Find("HealthText").GetComponent<Text>();
 		_armorText = GameObject.Find("ArmorText").GetComponent<Text>();
 		_damageText = GameObject.Find("DamageText").GetComponent<Text>();
 		_experienceText = GameObject.Find("ExperienceText").GetComponent<Text>();
 		_popUp = GameObject.Find("PopUp").GetComponent<Text>();
-		_storedFood = GameObject.Find("StoredFoodText").GetComponent<Text>();
-		
+		//_questLog = GameObject.Find("QuestLog").transform.GetChild(0).GetComponent<Text>();
+		_questLog = GameObject.Find("QuestInfo").GetComponent<Text>();
+
+		UpdateTexts();
+	}
+
+	private void UpdateTexts() {
 		_levelText.text = "Level: " + parameters.playerLevel;
 		_healthText.text = "Health: " + parameters.Health;
 		_armorText.text = "Armor: " + parameters.armor;
 		_damageText.text = "Damage: " + parameters.AttackPoints;
 		_experienceText.text = "Experience: " + parameters.experience;
 		_popUp.text = "";
-		_storedFood.text = "Stored food: " + parameters.storedFood;
+
+		_questLog.text = "";
+		foreach (var quest in _quests) {
+			if (quest.Discovered && !quest.Completed) {
+				_questLog.text += quest.Info + "\n";
+			}
+			else {
+				_questLog.text += "\n";
+			}
+		}
+	}
+
+	private void UpdateInventory() {
+		
 	}
 	
 	private void Update () {
 		
-		if(!GameManager.Instance.playersCanMove) return;
+		if(!GameManager.Instance.playerCanMove) return;
 
 		if (Input.GetKeyDown(KeyCode.Space))
 		{
 			if (parameters.storedFood > 0) {
 				Heal(ConsumableHealValue);
 				parameters.storedFood--;
-			
-				_storedFood.text = "Stored food: " + parameters.storedFood;
 			}
 			
 			StartCoroutine(WaitTillNextMove());
@@ -220,19 +254,21 @@ public class Player : MovingObject {
 	
 	protected override void AttemptMove (int xDir, int yDir) {
 		
-		_popUp.text = "";
-		GameManager.Instance.playersCanMove = false;
+//		_levelText.text = "Level: " + parameters.playerLevel;
+//		_healthText.text = "Health: " + parameters.Health;
+//		_armorText.text = "Armor: " + parameters.armor;
+//		_damageText.text = "Damage: " + parameters.AttackPoints;
+//		_experienceText.text = "Experience: " + parameters.experience;
+//		_popUp.text = "";
+
+		UpdateTexts();
+		
+		GameManager.Instance.playerCanMove = false;
 		
 		base.AttemptMove(xDir, yDir);
 
-		_levelText.text = "Level: " + parameters.playerLevel;
-		_healthText.text = "Health: " + parameters.Health;
-		_armorText.text = "Armor: " + parameters.armor;
-		_damageText.text = "Damage: " + parameters.AttackPoints;
-		_experienceText.text = "Experience: " + parameters.experience;
-		
 		if (HitOuterWall) {
-			GameManager.Instance.playersCanMove = true;
+			GameManager.Instance.playerCanMove = true;
 		}
 	}
 	
@@ -245,10 +281,12 @@ public class Player : MovingObject {
 			case Enemy enemy: {
 				if (!HasItem("Sword")) {
 					_popUp.text = "You can't attack enemies without a sword";
+					_quests[4].Discovered = true;
+
+					GameObject.Find("HiddenWall").SetActive(false);
 				}
 				else {
 					enemy.TakeDamage(parameters.AttackPoints);
-					
 					if (enemy.isActiveAndEnabled == false) {
 						CheckLevel(enemy.parameters.experienceGranted);
 					}
@@ -268,6 +306,7 @@ public class Player : MovingObject {
 					case Wall.Type.Dirt: {
 					if (!HasItem("Shovel")) {
 						_popUp.text = "You can't pass without a Shovel";
+						_quests[2].Discovered = true;
 					}
 					else {
 						_animator.SetTrigger(PlayerChop);
@@ -280,7 +319,8 @@ public class Player : MovingObject {
 
 					case Wall.Type.Stone: {
 					if (!HasItem("Pickaxe")) {
-						_popUp.text = "You can't pass without a Pickaxe";	
+						_popUp.text = "You can't pass without a Pickaxe";
+						_quests[3].Discovered = true;
 					}
 					else {
 						_animator.SetTrigger(PlayerChop);
@@ -299,12 +339,18 @@ public class Player : MovingObject {
 
 			case Sign sign: {
 				_popUp.text = sign.signText;
+
+				if (sign.name == "Sign (1)") {
+					_quests[0].Discovered = true;
+				}
+				
 				break;
 			}
 
 			case Chest chest: {
 				if (!HasItem("Key")) {
 					_popUp.text = "Locked! You need a key to open the chest";
+					_quests[1].Discovered = true;
 				}
 				else {
 					if(chest.IsOpen){
@@ -312,6 +358,7 @@ public class Player : MovingObject {
 						_popUp.text = "You won!";
 					}
 					else {
+						_quests[0].Completed = true;
 						chest.Open();
 					}
 				}
@@ -373,33 +420,37 @@ public class Player : MovingObject {
 
 			if (food.storable) {
 				parameters.storedFood++;
-				_storedFood.text = "Stored food: " + parameters.storedFood;
 			}
 			else {
 				var healthPerFood = food.healthValue;
-
 				Heal(healthPerFood);
-					
 			}
-			
 				
 			pickedFood.Add(food.PickedUp());
 		}
 
 		else if (other.CompareTag("Sword")) {
+			_quests[4].Completed = true;
 			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Sword"))].isActive = true;
+			_popUp.text = "Sword obtained!";
 		}
 		
 		else if (other.CompareTag("Pickaxe")) {
+			_quests[3].Completed = true;
 			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Pickaxe"))].isActive = true;
+			_popUp.text = "Pickaxe obtained!";
 		}
 		
 		else if (other.CompareTag("Shovel")) {
+			_quests[2].Completed = true;
 			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Shovel"))].isActive = true;
+			_popUp.text = "Shovel obtained!";
 		}
 		
 		else if (other.CompareTag("Key")) {
+			_quests[1].Completed = true;
 			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Key"))].isActive = true;
+			_popUp.text = "Key obtained!";
 		}
 		
 		other.gameObject.SetActive (false);
@@ -448,7 +499,7 @@ public class Player : MovingObject {
 
 	private IEnumerator WaitTillNextMove() {
 		yield return new WaitForSeconds(MoveDelay);
-		GameManager.Instance.playersCanMove = true;
+		GameManager.Instance.playerCanMove = true;
 	}
 
 	private void Heal(int amount) {
