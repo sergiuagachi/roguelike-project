@@ -9,17 +9,13 @@ public class GameManager : MonoBehaviour {
 	public static GameManager Instance;
 	
 	public bool playerCanMove = true;
-	private int _playerDamage;
-	
-	public int armorPerLevel = 10;
-	public int attackPointsPerLevel = 25;
 
 	private Vector3 _lastCheckpointPosition;
 	private int _lastCheckpointFloor = 1;
 
 	public int Floor { get; private set; } = 1;
 
-	private readonly List<Food> _foodOnFloor = new List<Food>();
+	private readonly List<Food> _itemsOnFloor = new List<Food>();
 	private Text _floorText;
 
 	private void Awake() {
@@ -45,7 +41,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	private void LoadFloor(int floor) {
-		_foodOnFloor.Clear();
+		_itemsOnFloor.Clear();
 		
 		SceneManager.LoadScene("Floor" + floor, LoadSceneMode.Single);
 		SceneManager.sceneLoaded += OnSceneLoaded;
@@ -57,14 +53,11 @@ public class GameManager : MonoBehaviour {
 		_floorText = GameObject.Find("FloorText").GetComponent<Text>();
 		_floorText.text = "Floor " + Floor;
 		
-		foreach(var food in Player.Instance.pickedFood) {
-			if (food.Floor == Floor) {
-				foreach (var instance in _foodOnFloor) {
-					if (instance.transform.position == food.Position) {
-						instance.gameObject.SetActive(false);
-						enabled = false;
-					}
-				}
+		foreach(var item in Player.Instance.pickedItems) {
+			if (item.Floor != Floor) continue;
+			foreach (var spawnedItem in _itemsOnFloor) {
+				if (spawnedItem.transform.position != item.Position) continue;
+				spawnedItem.gameObject.SetActive(false);
 			}
 		}
 	}
@@ -84,6 +77,6 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void AddFood(Food food) {
-		_foodOnFloor.Add(food);
+		_itemsOnFloor.Add(food);
 	}
 }

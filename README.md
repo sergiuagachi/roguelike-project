@@ -1,9 +1,12 @@
 TODO list:
-	- android features
-		- heal button
+	- must do fast
+		- analytics
+		- add endings
+			- if deathCounter >= 1 then badEnding
+			- else good ending
 		
 	- all platforms:
-		- analytics
+		- heal on fruit press
 		- inventory like on the right side
 			- maybe group pick axe and fruits into a parent class: Collectible
 			- all the collectibles should be treated the same
@@ -22,12 +25,7 @@ TODO list:
 		- consistency when assigning variables (either in start or in declaration)
 		
 	- maybe
-		- more types of food
-			- add a list of collected foods and their values
-		- add endings
-			- if deathCounter >= 1 then badEnding
-			- else good ending
-			- maybe add more
+		- add more endings
 		
 	- testing
 		- perform even more test for potential bugs

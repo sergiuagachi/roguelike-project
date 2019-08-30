@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Enemy : PhysicsObject{
+public class Enemy : LivingObject{
 
     private Animator _animator;
 	private static readonly int EnemyAttack = Animator.StringToHash("enemyAttack");

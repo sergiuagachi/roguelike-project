@@ -2,7 +2,6 @@
 
 public class Food : MonoBehaviour {
     
-    
     public int healthValue;
     public bool storable;
 
@@ -10,7 +9,7 @@ public class Food : MonoBehaviour {
         GameManager.Instance.AddFood(this);
     }
 
-    public Player.PickedFood PickedUp() {
-        return new Player.PickedFood(GameManager.Instance.Floor, transform.position);
+    public PickedItem PickedUp() {
+        return new PickedItem(GameManager.Instance.Floor, transform.position);
     }
 }

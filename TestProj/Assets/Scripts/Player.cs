@@ -7,51 +7,6 @@ using Random = UnityEngine.Random;
 
 public class Player : MovingObject {
 
-	public static Player Instance;
-	
-#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-	private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
-#endif
-
-	private readonly int _defaultHealth = 100;
-	
-	//todo: to be used when reaching ending
-	//todo: analytics
-	private int _deathCounter;
-	private int _enemiesKilled;
-	private int _stepsTaken;
-	private int _damageDealt;
-	private int _damageTaken;
-	private int _floorsChanged;
-	private int _totalHeal;
-
-	private const float MoveDelay = 0.2f;
-
-	private const int ConsumableHealValue = 40;
-
-	private bool _onStairs;
-
-	public class PickedFood {
-		public readonly int Floor;
-		public Vector3 Position;
-
-		public PickedFood(int floor, Vector3 position) {
-			Floor = floor;
-			Position = position;
-		}
-	}
-	
-	[Serializable]
-	public class Item {
-		public string name;
-		public bool isActive;
-
-		public Item(string name, bool isActive) {
-			this.name = name;
-			this.isActive = isActive;
-		}
-	}
-
 	[Serializable]
 	public class ExtendedParameters : DefaultParameters {
 		public int playerLevel;
@@ -78,7 +33,6 @@ public class Player : MovingObject {
 			storedFood = 0;
 		}
 	}
-
 	private class Quest {
 		public readonly string Info;
 		public bool Discovered;
@@ -90,8 +44,30 @@ public class Player : MovingObject {
 		}
 	}
 	
+	public static Player Instance;
+	
+#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+	private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
+#endif
+
+	private const int DefaultHealth = 100;
+	private const int ArmorPerLevel = 10;
+	private const int AttackPointsPerLevel = 25;
+	private const float MoveDelay = 0.2f;
+	private const int ConsumableHealValue = 40;
+	
+	//todo: to be used when reaching ending
+	//todo: analytics
+	private int _deathCounter;
+	private int _enemiesKilled;
+	private int _stepsTaken;
+	private int _damageDealt;
+	private int _damageTaken;
+	private int _floorsChanged;
+	private int _totalHeal;
+	
 	public ExtendedParameters parameters;
-	public List<PickedFood> pickedFood = new List<PickedFood>();
+	public List<PickedItem> pickedItems = new List<PickedItem>();
 	private readonly List<Quest> _quests = new List<Quest> {
 		new Quest("Find the treasure", false),
 		new Quest("Find the key", false),
@@ -108,7 +84,10 @@ public class Player : MovingObject {
 	private Text _popUp;
 	private Text _questLog;
 
+	private bool _onStairs;
+	
 	private Animator _animator;
+	
 	private static readonly int PlayerChop = Animator.StringToHash("playerChop");
 	private static readonly int PlayerHit = Animator.StringToHash("playerHit");
 	
@@ -256,8 +235,8 @@ public class Player : MovingObject {
 		parameters.experience -= 100;
 		parameters.playerLevel++;
 
-		parameters.AttackPoints += GameManager.Instance.attackPointsPerLevel;
-		parameters.armor += GameManager.Instance.armorPerLevel;
+		parameters.AttackPoints += AttackPointsPerLevel;
+		parameters.armor += ArmorPerLevel;
 	}
 	
 	protected override void AttemptMove (int xDir, int yDir) {
@@ -438,7 +417,7 @@ public class Player : MovingObject {
 				Heal(healthPerFood);
 			}
 				
-			pickedFood.Add(food.PickedUp());
+			pickedItems.Add(food.PickedUp());
 		}
 
 		else if (other.CompareTag("Sword")) {
@@ -504,7 +483,7 @@ public class Player : MovingObject {
 	private void RespawnAtCheckpoint() {
 
 		_deathCounter++;
-		parameters.Health = _defaultHealth;
+		parameters.Health = DefaultHealth;
 		
 		GameManager.Instance.ReturnToCheckpoint();
 	}

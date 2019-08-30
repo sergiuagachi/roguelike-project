@@ -1,17 +1,7 @@
 ﻿using UnityEngine;
 
-public abstract class PhysicsObject : MonoBehaviour
-{
-	public class DefaultParameters {
-		public int Health;
-		public int AttackPoints;
-
-		protected DefaultParameters(int health, int attackPoints) {
-			Health = health;
-			AttackPoints = attackPoints;
-		}
-	}
-
+public abstract class LivingObject : MonoBehaviour {
+	
 	protected Rigidbody2D Rb2D;
 	
 	public Sprite damagedSprite;

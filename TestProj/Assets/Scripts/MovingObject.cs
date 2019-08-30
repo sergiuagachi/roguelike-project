@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class MovingObject : PhysicsObject {
+public abstract class MovingObject : LivingObject {
 	
 	protected float MoveTime;			//Time it will take object to move, in seconds.
 	private LayerMask _blockingLayer;			//Layer on which collision will be checked.
