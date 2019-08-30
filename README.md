@@ -6,7 +6,6 @@ TODO list:
 	- all platforms:
 		- inventory like on the right side
 			- maybe group pickaxe and fruits into a parent class: Collectible
-		- quest system like on the right side
 		
     - create more levels;
 		- more types of terrains
