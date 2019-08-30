@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Vector3 = UnityEngine.Vector3;
 
 public class GameManager : MonoBehaviour {
@@ -13,14 +13,14 @@ public class GameManager : MonoBehaviour {
 	
 	public int armorPerLevel = 10;
 	public int attackPointsPerLevel = 25;
-	
-	private int _floor = 1;
 
 	private Vector3 _lastCheckpointPosition;
 	private int _lastCheckpointFloor = 1;
 
-	public int Floor => _floor;
+	public int Floor { get; private set; } = 1;
+
 	private readonly List<Food> _foodOnFloor = new List<Food>();
+	private Text _floorText;
 
 	private void Awake() {
 		if (Instance == null) {
@@ -30,19 +30,23 @@ public class GameManager : MonoBehaviour {
 			Destroy(gameObject);
 		}
 
+		_floorText = GameObject.Find("FloorText").GetComponent<Text>();
+		_floorText.text = "Floor 1";
+		
 		DontDestroyOnLoad(gameObject);
 	}
 
 	public void LoadNextFloor() {
-		LoadFloor(++_floor);
+		LoadFloor(++Floor);
 	}
 	
 	public void LoadPreviousFloor() {
-		LoadFloor(--_floor);
+		LoadFloor(--Floor);
 	}
 
 	private void LoadFloor(int floor) {
 		_foodOnFloor.Clear();
+		
 		SceneManager.LoadScene("Floor" + floor, LoadSceneMode.Single);
 		SceneManager.sceneLoaded += OnSceneLoaded;
 	}
@@ -50,11 +54,14 @@ public class GameManager : MonoBehaviour {
 	private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1) {
 		Player.Instance.GetTexts();
 		
+		_floorText = GameObject.Find("FloorText").GetComponent<Text>();
+		_floorText.text = "Floor " + Floor;
+		
 		foreach(var food in Player.Instance.pickedFood) {
-			if (food.Floor == _floor) {
-				foreach (var instace in _foodOnFloor) {
-					if (instace.transform.position == food.Position) {
-						instace.gameObject.SetActive(false);
+			if (food.Floor == Floor) {
+				foreach (var instance in _foodOnFloor) {
+					if (instance.transform.position == food.Position) {
+						instance.gameObject.SetActive(false);
 						enabled = false;
 					}
 				}
@@ -64,7 +71,7 @@ public class GameManager : MonoBehaviour {
 
 	public void ActivateCheckpoint(Transform checkpoint) {
 		_lastCheckpointPosition = checkpoint.position;
-		_lastCheckpointFloor = _floor;
+		_lastCheckpointFloor = Floor;
 	}
 
 	public Vector3 GetLastCheckpointPosition() {
@@ -73,7 +80,7 @@ public class GameManager : MonoBehaviour {
 	
 	public void ReturnToCheckpoint() {
 		Player.Instance.transform.position = _lastCheckpointPosition;
-		LoadFloor(_floor = _lastCheckpointFloor);
+		LoadFloor(Floor = _lastCheckpointFloor);
 	}
 
 	public void AddFood(Food food) {

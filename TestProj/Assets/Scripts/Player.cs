@@ -14,8 +14,16 @@ public class Player : MovingObject {
 #endif
 
 	private readonly int _defaultHealth = 100;
+	
 	//todo: to be used when reaching ending
+	//todo: analytics
 	private int _deathCounter;
+	private int _enemiesKilled;
+	private int _stepsTaken;
+	private int _damageDealt;
+	private int _damageTaken;
+	private int _floorsChanged;
+	private int _totalHeal;
 
 	private const float MoveDelay = 0.2f;
 
@@ -398,7 +406,7 @@ public class Player : MovingObject {
 			_onStairs = true;
 			
 			var stairs = other.GetComponent<Stairs>();
-			SpriteRenderer.flipX = stairs.spriteRenderer.flipX;
+			SpriteRenderer.flipX = !stairs.spriteRenderer.flipX;
 			
 			stairs.ChangeLevel();
 

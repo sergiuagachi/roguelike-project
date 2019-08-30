@@ -1,11 +1,13 @@
 TODO list:
 	- android features
 		- heal button
-		- hover over to see some info
 		
 	- all platforms:
+		- analytics
 		- inventory like on the right side
-			- maybe group pickaxe and fruits into a parent class: Collectible
+			- maybe group pick axe and fruits into a parent class: Collectible
+			- all the collectibles should be treated the same
+				- how i treat fruits right now, i should treat the sword for ex
 		
     - create more levels;
 		- more types of terrains

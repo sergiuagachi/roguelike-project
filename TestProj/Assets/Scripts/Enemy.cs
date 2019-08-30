@@ -18,17 +18,13 @@ public class Enemy : PhysicsObject{
 
 	public ExtendedParameters parameters;
 
-	//private Image _leftPanelImage;
-	//private Text _leftPanelText;
-	private GameObject _leftPanel;
+	private GameObject _monsterInfo;
 	private GameObject _overlay;
 
 	protected override void Start () {
 		base.Start ();
 
-		//_leftPanelImage = GameObject.Find("LeftPanelImage").GetComponent<Image>();
-		//_leftPanelText = GameObject.Find("LeftPanelText").GetComponent<Text>();
-		_leftPanel = GameObject.Find("LeftPanel");
+		_monsterInfo = GameObject.Find("MonsterInfo");
 		_overlay = GameObject.Find("Overlay");
 		
 		_animator = GetComponent<Animator> ();
@@ -43,9 +39,9 @@ public class Enemy : PhysicsObject{
 		ChangeToDamagedSprite();
 
 		if (parameters.Health <= 0) {
+			HideDetails();
 			gameObject.SetActive(false);
 			enabled = false;
-			HideDetails();
 		}
 	}
 
@@ -59,8 +55,8 @@ public class Enemy : PhysicsObject{
 		tempColor.a = 0;
 		_overlay.GetComponent<Image>().color = tempColor;
 		
-		var text = _leftPanel.gameObject.transform.GetChild(0).GetComponent<Text>();
-		var image = _leftPanel.gameObject.transform.GetChild(1).GetComponent<Image>();
+		var text = _monsterInfo.gameObject.transform.GetChild(0).GetComponent<Text>();
+		var image = _monsterInfo.gameObject.transform.GetChild(1).GetComponent<Image>();
 		
 		image.sprite = SpriteRenderer.sprite;
 		text.text = "Name: " + transform.name.Substring(0, transform.name.Length - 4) + "\n" +

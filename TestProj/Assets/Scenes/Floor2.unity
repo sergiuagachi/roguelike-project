@@ -4223,7 +4223,7 @@ PrefabInstance:
     - target: {fileID: 5205358633100456069, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
       propertyPath: m_Name
-      value: Enemy1 (5)
+      value: Skeleton (5)
       objectReference: {fileID: 0}
     - target: {fileID: 6295479745315048895, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
@@ -6092,7 +6092,7 @@ PrefabInstance:
     - target: {fileID: 5205358633100456069, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
       propertyPath: m_Name
-      value: Enemy1 (2)
+      value: Skeleton (2)
       objectReference: {fileID: 0}
     - target: {fileID: 6295479745315048895, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
@@ -8640,7 +8640,7 @@ PrefabInstance:
     - target: {fileID: 5205358633100456069, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
       propertyPath: m_Name
-      value: Enemy1 (3)
+      value: Skeleton (3)
       objectReference: {fileID: 0}
     - target: {fileID: 6295479745315048895, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
@@ -12150,7 +12150,7 @@ PrefabInstance:
     - target: {fileID: 5205358633100456069, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
       propertyPath: m_Name
-      value: Enemy1 (4)
+      value: Skeleton (4)
       objectReference: {fileID: 0}
     - target: {fileID: 6295479745315048895, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
@@ -13608,7 +13608,7 @@ PrefabInstance:
     - target: {fileID: 5205358633100456069, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
       propertyPath: m_Name
-      value: Enemy1 (1)
+      value: Skeleton (1)
       objectReference: {fileID: 0}
     - target: {fileID: 6295479745315048895, guid: 3dbf0eab3abb4a4449f659d90f3d4906,
         type: 3}
