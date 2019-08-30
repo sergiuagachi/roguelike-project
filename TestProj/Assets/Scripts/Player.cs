@@ -283,7 +283,11 @@ public class Player : MovingObject {
 					_popUp.text = "You can't attack enemies without a sword";
 					_quests[4].Discovered = true;
 
-					GameObject.Find("HiddenWall").SetActive(false);
+					var hiddenWall = GameObject.Find("HiddenWall");
+					if (hiddenWall) {
+						hiddenWall.SetActive(false);
+					}
+						
 				}
 				else {
 					enemy.TakeDamage(parameters.AttackPoints);
