@@ -9,7 +9,7 @@ public class Stairs : MonoBehaviour{
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public void ChangeLevel() {
+    public void ChangeFloor() {
         if (name.Contains("StairsUp")) {
             GameManager.Instance.LoadNextFloor();
         }

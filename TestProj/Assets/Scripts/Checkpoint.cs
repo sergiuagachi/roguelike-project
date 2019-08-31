@@ -5,7 +5,7 @@ public class Checkpoint : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     public Sprite activeSprite;
 
-    protected virtual void Start () {
+    protected void Start () {
         _spriteRenderer = GetComponent<SpriteRenderer> ();
     }
     

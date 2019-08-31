@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 public class Player : MovingObject {
 
@@ -13,8 +12,6 @@ public class Player : MovingObject {
 		public int experience;
 
 		public int armor;
-		
-		public int blockChance;
 
 		public int storedFood;
 		
@@ -28,7 +25,6 @@ public class Player : MovingObject {
 
 		public ExtendedParameters() : base(100, 50){
 			armor = 0;
-			blockChance = 0;
 			playerLevel = 1;
 			storedFood = 0;
 		}
@@ -55,19 +51,9 @@ public class Player : MovingObject {
 	private const int AttackPointsPerLevel = 25;
 	private const float MoveDelay = 0.2f;
 	private const int ConsumableHealValue = 40;
-	
-	//todo: to be used when reaching ending
-	//todo: analytics
-	private int _deathCounter;
-	private int _enemiesKilled;
-	private int _stepsTaken;
-	private int _damageDealt;
-	private int _damageTaken;
-	private int _floorsChanged;
-	private int _totalHeal;
-	
+
 	public ExtendedParameters parameters;
-	public List<PickedItem> pickedItems = new List<PickedItem>();
+	public List<ItemLocation> pickedItems = new List<ItemLocation>();
 	private readonly List<Quest> _quests = new List<Quest> {
 		new Quest("Find the treasure", false),
 		new Quest("Find the key", false),
@@ -75,6 +61,9 @@ public class Player : MovingObject {
 		new Quest("Find the pickaxe", false),
 		new Quest("Find the sword", false),
 	};
+	
+	private readonly Statistics _statistics = new Statistics();
+	public Statistics Statistics => _statistics;
 	
 	private Text _levelText;
 	private Text _healthText;
@@ -120,7 +109,6 @@ public class Player : MovingObject {
 		_damageText = GameObject.Find("DamageText").GetComponent<Text>();
 		_experienceText = GameObject.Find("ExperienceText").GetComponent<Text>();
 		_popUp = GameObject.Find("PopUp").GetComponent<Text>();
-		//_questLog = GameObject.Find("QuestLog").transform.GetChild(0).GetComponent<Text>();
 		_questLog = GameObject.Find("QuestInfo").GetComponent<Text>();
 
 		UpdateTexts();
@@ -145,16 +133,17 @@ public class Player : MovingObject {
 		}
 	}
 
-	private void UpdateInventory() {
-		
-	}
+//	private void UpdateInventory() {
+//		
+//	}
 	
 	private void Update () {
+
+		GameManager.Instance.timeElapsed += Time.deltaTime;
 		
 		if(!GameManager.Instance.playerCanMove) return;
 
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
+		if (Input.GetKeyDown(KeyCode.Space)) {
 			if (parameters.storedFood > 0) {
 				Heal(ConsumableHealValue);
 				parameters.storedFood--;
@@ -165,56 +154,38 @@ public class Player : MovingObject {
 
 		else {
 
-			var horizontal = (int) (Input.GetAxisRaw("Horizontal"));
-			var vertical = (int) (Input.GetAxisRaw("Vertical"));
+			var horizontal = (int) Input.GetAxisRaw("Horizontal");
+			var vertical = (int) Input.GetAxisRaw("Vertical");
 
 			// prevent diagonal movement
 			if (horizontal != 0) {
 				vertical = 0;
 			}
 
-			//Check if we are running on iOS, Android, Windows Phone 8 or Unity iPhone
-#if UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-			
-			//Check if Input has registered more than zero touches
-			if (Input.touchCount > 0)
-			{
-				//Store the first touch detected.
-				Touch myTouch = Input.touches[0];
-				
-				//Check if the phase of that touch equals Began
-				if (myTouch.phase == TouchPhase.Began)
-				{
-					//If so, set touchOrigin to the position of that touch
+#if UNITY_ANDROID
+			if (Input.touchCount > 0) {
+				var myTouch = Input.touches[0];
+				if (myTouch.phase == TouchPhase.Began){
 					touchOrigin = myTouch.position;
 				}
 				
-				//If the touch phase is not Began, and instead is equal to Ended and the x of touchOrigin is greater or equal to zero:
-				else if (myTouch.phase == TouchPhase.Ended && touchOrigin.x >= 0)
-				{
-					//Set touchEnd to equal the position of this touch
+				else if (myTouch.phase == TouchPhase.Ended && touchOrigin.x >= 0){
 					Vector2 touchEnd = myTouch.position;
 					
-					//Calculate the difference between the beginning and end of the touch on the x axis.
-					float x = touchEnd.x - touchOrigin.x;
+					var x = touchEnd.x - touchOrigin.x;
+					var y = touchEnd.y - touchOrigin.y;
 					
-					//Calculate the difference between the beginning and end of the touch on the y axis.
-					float y = touchEnd.y - touchOrigin.y;
-					
-					//Set touchOrigin.x to -1 so that our else if statement will evaluate false and not repeat immediately.
 					touchOrigin.x = -1;
-					
-					//Check if the difference along the x axis is greater than the difference along the y axis.
-					if (Mathf.Abs(x) > Mathf.Abs(y))
-						//If x is greater than zero, set horizontal to 1, otherwise set it to -1
+
+					if (Mathf.Abs(x) > Mathf.Abs(y)) {
 						horizontal = x > 0 ? 1 : -1;
-					else
-						//If y is greater than zero, set horizontal to 1, otherwise set it to -1
+					}
+					else {
 						vertical = y > 0 ? 1 : -1;
+					}
 				}
-			}
-			
-#endif //End of mobile platform dependendent compilation section started above with #elif
+			}		
+#endif
 			
 			if (horizontal != 0 || vertical != 0) {
 				AttemptMove(horizontal, vertical);
@@ -222,12 +193,19 @@ public class Player : MovingObject {
 		}
 	}
 
-	private bool HasItem(string powerupName) {	
-		return parameters.items[parameters.items.FindIndex(x => x.name.Equals(powerupName))].isActive;
+	private bool HasItem(string itemName) {	
+		return parameters.items[parameters.items.FindIndex(x => x.name.Equals(itemName))].isActive;
 	}
 
-	private void CheckLevel(int experienceGained) {
+	private void AcquireItem(string itemName) {
+		parameters.items[parameters.items.FindIndex(x => x.name.Equals(itemName))].isActive = true;
+		_popUp.text = itemName + " obtained!";
+	}
 
+	private void AssignExperience(int experienceGained) {
+
+		_statistics.EnemiesKilled++;
+		
 		parameters.experience += experienceGained / parameters.playerLevel;
 		
 		if (parameters.experience < 100) return;
@@ -241,27 +219,21 @@ public class Player : MovingObject {
 	
 	protected override void AttemptMove (int xDir, int yDir) {
 		
-//		_levelText.text = "Level: " + parameters.playerLevel;
-//		_healthText.text = "Health: " + parameters.Health;
-//		_armorText.text = "Armor: " + parameters.armor;
-//		_damageText.text = "Damage: " + parameters.AttackPoints;
-//		_experienceText.text = "Experience: " + parameters.experience;
-//		_popUp.text = "";
-
 		UpdateTexts();
 		
 		GameManager.Instance.playerCanMove = false;
-		
+
+		_statistics.StepsTaken++;
 		base.AttemptMove(xDir, yDir);
 
 		if (HitOuterWall) {
 			GameManager.Instance.playerCanMove = true;
+			_statistics.StepsTaken--;
 		}
 	}
 	
-	protected override void OnCantMove(MonoBehaviour component) {
-		var hitObj = component;
-		if (!hitObj) return;
+	protected override void OnCantMove(MonoBehaviour hitObj) {
+		_statistics.StepsTaken--;
 		
 		switch (hitObj) {
 			
@@ -270,19 +242,21 @@ public class Player : MovingObject {
 					_popUp.text = "You can't attack enemies without a sword";
 					_quests[4].Discovered = true;
 
-					var hiddenWall = GameObject.Find("HiddenWall");
+					var hiddenWall = GameObject.Find("HiddenWall (1)");
 					if (hiddenWall) {
-						hiddenWall.SetActive(false);
+						pickedItems.Add(hiddenWall.GetComponent<UniqueItem>().PickUp());
+						hiddenWall.SetActive (false);
 					}
 						
 				}
 				else {
-					enemy.TakeDamage(parameters.AttackPoints);
+					_statistics.DamageDealt += enemy.TakeDamage(parameters.AttackPoints);
+					
 					if (enemy.isActiveAndEnabled == false) {
-						CheckLevel(enemy.parameters.experienceGranted);
+						AssignExperience(enemy.parameters.experienceGranted);
 					}
 					else {
-						TakeDamage(enemy.parameters.AttackPoints);	
+						_statistics.DamageReceived += TakeDamage(enemy.parameters.AttackPoints);	
 					}
 					
 					_animator.SetTrigger(PlayerChop);
@@ -333,6 +307,12 @@ public class Player : MovingObject {
 
 				if (sign.name == "Sign (1)") {
 					_quests[0].Discovered = true;
+					
+					var hiddenWall = GameObject.Find("HiddenWall (2)");
+					if (hiddenWall) {
+						pickedItems.Add(hiddenWall.GetComponent<UniqueItem>().PickUp());
+						hiddenWall.SetActive(false);
+					}
 				}
 				
 				break;
@@ -345,11 +325,10 @@ public class Player : MovingObject {
 				}
 				else {
 					if(chest.IsOpen){
-						//todo: end the game, will delete this line
-						_popUp.text = "You won!";
+						_popUp.text = "You obtained the treasure!";
+						_quests[0].Completed = true;
 					}
 					else {
-						_quests[0].Completed = true;
 						chest.Open();
 					}
 				}
@@ -362,18 +341,15 @@ public class Player : MovingObject {
 	
 	private void OnTriggerEnter2D (Collider2D other) {
 
-		// uncollectibles
-		
+		//// uncollectibles ////
 		if(other.CompareTag("Exit")) {
 			if (HasItem("Treasure")) {
 				// end game
-				enabled = false;
+				GameManager.EndGame();
 			}
 			else {
 				_popUp.text = "Without the treasure, the exit is closed";
 			}
-			
-			
 			return;
 		}
 
@@ -387,24 +363,22 @@ public class Player : MovingObject {
 			var stairs = other.GetComponent<Stairs>();
 			SpriteRenderer.flipX = !stairs.spriteRenderer.flipX;
 			
-			stairs.ChangeLevel();
-
+			stairs.ChangeFloor();
+			_statistics.FloorsChanged++;
+			
 			return;
 		}
 
 		if (other.CompareTag("Checkpoint")) {
-
 			if (GameManager.Instance.GetLastCheckpointPosition() != other.transform.position) {
 			   _popUp.text = "Checkpoint reached. Saved!";
 			}
 			
 			GameManager.Instance.ActivateCheckpoint(other.transform);
-			
 			return;
 		}
 
-		// collectibles
-		
+		//// collectibles ////
 		if(other.CompareTag("Food")) {
 
 			var food = other.GetComponent<Food>();
@@ -416,34 +390,29 @@ public class Player : MovingObject {
 				var healthPerFood = food.healthValue;
 				Heal(healthPerFood);
 			}
-				
-			pickedItems.Add(food.PickedUp());
 		}
 
 		else if (other.CompareTag("Sword")) {
 			_quests[4].Completed = true;
-			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Sword"))].isActive = true;
-			_popUp.text = "Sword obtained!";
+			AcquireItem("Sword");
 		}
 		
 		else if (other.CompareTag("Pickaxe")) {
 			_quests[3].Completed = true;
-			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Pickaxe"))].isActive = true;
-			_popUp.text = "Pickaxe obtained!";
+			AcquireItem("Pickaxe");
 		}
 		
 		else if (other.CompareTag("Shovel")) {
 			_quests[2].Completed = true;
-			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Shovel"))].isActive = true;
-			_popUp.text = "Shovel obtained!";
+			AcquireItem("Shovel");
 		}
 		
 		else if (other.CompareTag("Key")) {
 			_quests[1].Completed = true;
-			parameters.items[parameters.items.FindIndex(x => x.name.Equals("Key"))].isActive = true;
-			_popUp.text = "Key obtained!";
+			AcquireItem("Key");
 		}
 		
+		pickedItems.Add(other.GetComponent<UniqueItem>().PickUp());
 		other.gameObject.SetActive (false);
 	}
 
@@ -451,38 +420,34 @@ public class Player : MovingObject {
 		_onStairs = false;
 	}
 
-	public override void TakeDamage (int loss) {
+	public override int TakeDamage (int loss) {
 
 		loss = Math.Max(0, loss - parameters.armor);
 		
 		_animator.SetTrigger (PlayerHit);
 
-		// can block the damage
-		var willBlock = Random.Range(0, 100);
-		if (parameters.blockChance > willBlock) {
-			return;
-		}
-
 		parameters.Health -= loss;
 		
 		if(loss > 0)
 			_healthText.text = "-" + loss + " Health: " + parameters.Health;
+
+		var damageReceived = parameters.Health + loss;
 		
 		ChangeToDamagedSprite();
 		CheckDeadPlayer ();
+
+		return damageReceived;
 	}
 
 	private void CheckDeadPlayer () {
 		if (parameters.Health <= 0) {
-			//enabled = false;
-			//GameManager.Instance.GameOver ();
 			RespawnAtCheckpoint();
 		}
 	}
 
 	private void RespawnAtCheckpoint() {
 
-		_deathCounter++;
+		_statistics.DeathCounter++;
 		parameters.Health = DefaultHealth;
 		
 		GameManager.Instance.ReturnToCheckpoint();
@@ -494,7 +459,16 @@ public class Player : MovingObject {
 	}
 
 	private void Heal(int amount) {
+		var oldHealth = parameters.Health;
 		parameters.Health = Math.Min(100, parameters.Health + amount);
+
+		if (parameters.Health >= 100) {
+			_statistics.TotalHeal += parameters.Health - oldHealth;
+		}
+		else {
+			_statistics.TotalHeal += amount;
+		}
+		
 		_healthText.text = "+" + amount + " Health: " + parameters.Health;
 	}
 

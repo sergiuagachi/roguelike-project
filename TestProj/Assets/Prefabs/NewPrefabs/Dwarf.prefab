@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 4844209832048634195}
   - component: {fileID: 2947279148336287040}
   m_Layer: 8
-  m_Name: Enemy3
+  m_Name: Dwarf
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -351,5 +351,5 @@ MonoBehaviour:
   damagedSprite: {fileID: 0}
   parameters:
     Health: 400
-    AttackPoints: 70
-    experienceGranted: 200
+    AttackPoints: 60
+    experienceGranted: 100

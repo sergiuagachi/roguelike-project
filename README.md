@@ -1,9 +1,6 @@
 TODO list:
 	- must do fast
 		- analytics
-		- add endings
-			- if deathCounter >= 1 then badEnding
-			- else good ending
 		
 	- all platforms:
 		- heal on fruit press

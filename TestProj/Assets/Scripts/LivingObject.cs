@@ -17,7 +17,7 @@ public abstract class LivingObject : MonoBehaviour {
 			SpriteRenderer.sprite = damagedSprite;
 	}
 	
-	public abstract void TakeDamage(int loss);
+	public abstract int TakeDamage(int loss);
 
 	public abstract int GetHealth();
 }

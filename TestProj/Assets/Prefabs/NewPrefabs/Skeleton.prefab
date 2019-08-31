@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 2593804331268943273}
   - component: {fileID: 5198221200170486202}
   m_Layer: 8
-  m_Name: Enemy1
+  m_Name: Skeleton
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -292,7 +292,7 @@ MonoBehaviour:
   parameters:
     Health: 100
     AttackPoints: 12
-    experienceGranted: 25
+    experienceGranted: 12
 --- !u!1 &7391569077729360022
 GameObject:
   m_ObjectHideFlags: 0

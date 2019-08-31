@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: 237634092993923544}
   - component: {fileID: 8435607064688267556}
   m_Layer: 8
-  m_Name: Enemy2
+  m_Name: Orc
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -372,4 +372,4 @@ MonoBehaviour:
   parameters:
     Health: 200
     AttackPoints: 30
-    experienceGranted: 40
+    experienceGranted: 20

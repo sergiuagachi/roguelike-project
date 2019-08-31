@@ -7,7 +7,7 @@ public class Chest : MonoBehaviour
 
     public bool IsOpen { get; private set; }
 
-    protected virtual void Start () {
+    protected void Start () {
         _spriteRenderer = GetComponent<SpriteRenderer> ();
     }
     

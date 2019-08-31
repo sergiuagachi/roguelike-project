@@ -30,7 +30,7 @@ public class Enemy : LivingObject{
 		_animator = GetComponent<Animator> ();
 	}
 
-	public override void TakeDamage(int loss) {
+	public override int TakeDamage(int loss) {
 		// todo: some enemies dont have animations
 		if(_animator)
 			_animator.SetTrigger(EnemyAttack);
@@ -43,6 +43,8 @@ public class Enemy : LivingObject{
 			gameObject.SetActive(false);
 			enabled = false;
 		}
+
+		return parameters.Health + loss;
 	}
 
 	public override int GetHealth() {

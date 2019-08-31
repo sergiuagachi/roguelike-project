@@ -1,16 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable]
-public class PickedItem {
-    public readonly int Floor;
-    public readonly Vector3 Position;
+public class ItemLocation {
+    public int floor;
+    public Vector3 position;
 
-    public PickedItem(int floor, Vector3 position) {
-        Floor = floor;
-        Position = position;
+    public ItemLocation(int floor, Vector3 position) {
+        this.floor = floor;
+        this.position = position;
     }
 }
+
 [Serializable]
 public class Item {
     public string name;
@@ -30,5 +30,15 @@ public class DefaultParameters {
         Health = health;
         AttackPoints = attackPoints;
     }
+}
+
+public class Statistics {
+    public int DeathCounter;
+    public int EnemiesKilled;
+    public int StepsTaken;
+    public int DamageDealt;
+    public int DamageReceived;
+    public int FloorsChanged;
+    public int TotalHeal;
 }
 
