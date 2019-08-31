@@ -1,13 +1,8 @@
 TODO list:
-	- must do fast
-		- analytics
 		
 	- all platforms:
 		- heal on fruit press
 		- inventory like on the right side
-			- maybe group pick axe and fruits into a parent class: Collectible
-			- all the collectibles should be treated the same
-				- how i treat fruits right now, i should treat the sword for ex
 		
     - create more levels;
 		- more types of terrains
