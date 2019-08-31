@@ -31,7 +31,6 @@ public class Enemy : LivingObject{
 	}
 
 	public override int TakeDamage(int loss) {
-		// todo: some enemies dont have animations
 		if(_animator)
 			_animator.SetTrigger(EnemyAttack);
 		parameters.Health -= loss;

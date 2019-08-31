@@ -1,5 +1,8 @@
 TODO list:
-		
+	- urgent:
+		- info despre hover cu mouse
+		- info despre cât dă pepenele
+	
 	- all platforms:
 		- heal on fruit press
 		- inventory like on the right side
@@ -18,6 +21,7 @@ TODO list:
 		
 	- maybe
 		- add more endings
+		- animations
 		
 	- testing
 		- perform even more test for potential bugs

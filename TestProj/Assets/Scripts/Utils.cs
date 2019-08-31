@@ -2,12 +2,12 @@
 using UnityEngine;
 
 public class ItemLocation {
-    public int floor;
-    public Vector3 position;
+    public readonly int Floor;
+    public readonly Vector3 Position;
 
     public ItemLocation(int floor, Vector3 position) {
-        this.floor = floor;
-        this.position = position;
+        Floor = floor;
+        Position = position;
     }
 }
 

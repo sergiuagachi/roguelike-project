@@ -371,5 +371,5 @@ MonoBehaviour:
   damagedSprite: {fileID: 0}
   parameters:
     Health: 200
-    AttackPoints: 30
-    experienceGranted: 20
+    AttackPoints: 35
+    experienceGranted: 15

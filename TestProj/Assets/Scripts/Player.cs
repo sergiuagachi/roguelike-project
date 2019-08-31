@@ -330,6 +330,7 @@ public class Player : MovingObject {
 					}
 					else {
 						chest.Open();
+						AcquireItem("Treasure");
 					}
 				}
 				break;

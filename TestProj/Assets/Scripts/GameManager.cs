@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,7 +9,6 @@ public class GameManager : MonoBehaviour {
 	public static GameManager Instance;
 	
 	public bool playerCanMove = true;
-	public bool playerCanAdvance;
 
 	private Vector3 _lastCheckpointPosition;
 	private int _lastCheckpointFloor = 1;
@@ -58,9 +56,9 @@ public class GameManager : MonoBehaviour {
 		_floorText.text = "Floor " + _floor;
 		
 		foreach(var item in Player.Instance.pickedItems) {
-			if (item.floor != _floor) continue;
+			if (item.Floor != _floor) continue;
 			foreach (var spawnedItem in _itemsOnFloor) {
-				if (spawnedItem.transform.position != item.position) continue;
+				if (spawnedItem.transform.position != item.Position) continue;
 				spawnedItem.gameObject.SetActive(false);
 			}
 		}
