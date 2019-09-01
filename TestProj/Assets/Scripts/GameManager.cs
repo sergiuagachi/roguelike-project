@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour {
 		_floorText = GameObject.Find("FloorText").GetComponent<Text>();
 		_floorText.text = "Floor 1";
 		
+		QualitySettings.vSyncCount = 0;
+		Application.targetFrameRate = 30;
+		
 		DontDestroyOnLoad(gameObject);
 	}
 
