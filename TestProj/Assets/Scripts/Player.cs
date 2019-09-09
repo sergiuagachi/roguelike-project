@@ -77,6 +77,7 @@ public class Player : MovingObject {
 	private Image _pickaxeImage;
 	private Image _shovelImage;
 	private Image _keyImage;
+	private Food _foodImage;
 	private Text _amountText;
 	
 	private bool _onStairs;
@@ -121,6 +122,7 @@ public class Player : MovingObject {
 		_pickaxeImage = GameObject.Find("PickaxeImage").GetComponent<Image>();
 		_shovelImage = GameObject.Find("ShovelImage").GetComponent<Image>();
 		_keyImage = GameObject.Find("KeyImage").GetComponent<Image>();
+		_foodImage = GameObject.Find("FoodImage").GetComponent<Food>();
 		_amountText = GameObject.Find("Amount").GetComponent<Text>();
 		
 		UpdateUi();
@@ -152,23 +154,11 @@ public class Player : MovingObject {
 	}
 
 	private void Update () {
-
 		GameManager.Instance.timeElapsed += Time.deltaTime;
 		
 		if(!GameManager.Instance.playerCanMove) return;
 
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			if (parameters.storedFood > 0) {
-				Heal(ConsumableHealValue);
-				parameters.storedFood--;
-				_amountText.text = "x" + parameters.storedFood;
-			}
-			
-			StartCoroutine(WaitTillNextMove());
-		}
-
 		else {
-
 			var horizontal = (int) Input.GetAxisRaw("Horizontal");
 			var vertical = (int) Input.GetAxisRaw("Vertical");
 
@@ -483,7 +473,16 @@ public class Player : MovingObject {
 		GameManager.Instance.playerCanMove = true;
 	}
 
-	private void Heal(int amount) {
+	public void Heal(int amount) {
+
+		if (parameters.storedFood <= 0) {
+			_popUp.text = "You have no food stored!";
+			return;
+		}
+		
+		parameters.storedFood--;
+		_amountText.text = "x" + parameters.storedFood;
+		
 		var oldHealth = parameters.Health;
 		parameters.Health = Math.Min(100, parameters.Health + amount);
 

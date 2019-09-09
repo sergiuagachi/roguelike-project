@@ -51,7 +51,6 @@ public class Enemy : LivingObject{
 	}
 
 	private void ShowDetails() {
-
 		var tempColor = _overlay.GetComponent<Image>().color;
 		tempColor.a = 0;
 		_overlay.GetComponent<Image>().color = tempColor;
