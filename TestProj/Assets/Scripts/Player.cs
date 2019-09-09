@@ -73,6 +73,12 @@ public class Player : MovingObject {
 	private Text _popUp;
 	private Text _questLog;
 
+	private Image _swordImage;
+	private Image _pickaxeImage;
+	private Image _shovelImage;
+	private Image _keyImage;
+	private Text _amountText;
+	
 	private bool _onStairs;
 	
 	private Animator _animator;
@@ -95,14 +101,14 @@ public class Player : MovingObject {
 		_animator = GetComponent<Animator>();
 		parameters = new ExtendedParameters();
 
-		GetTexts();
+		GetUi();
 
 		GameManager.Instance.ActivateCheckpoint(transform);
 		
 		DontDestroyOnLoad(gameObject);
 	}
 
-	public void GetTexts() {
+	public void GetUi() {
 		_levelText = GameObject.Find("LevelText").GetComponent<Text>();
 		_healthText = GameObject.Find("HealthText").GetComponent<Text>();
 		_armorText = GameObject.Find("ArmorText").GetComponent<Text>();
@@ -111,10 +117,16 @@ public class Player : MovingObject {
 		_popUp = GameObject.Find("PopUp").GetComponent<Text>();
 		_questLog = GameObject.Find("QuestInfo").GetComponent<Text>();
 
-		UpdateTexts();
+		_swordImage = GameObject.Find("SwordImage").GetComponent<Image>();
+		_pickaxeImage = GameObject.Find("PickaxeImage").GetComponent<Image>();
+		_shovelImage = GameObject.Find("ShovelImage").GetComponent<Image>();
+		_keyImage = GameObject.Find("KeyImage").GetComponent<Image>();
+		_amountText = GameObject.Find("Amount").GetComponent<Text>();
+		
+		UpdateUi();
 	}
 
-	private void UpdateTexts() {
+	private void UpdateUi() {
 		_levelText.text = "Level: " + parameters.playerLevel;
 		_healthText.text = "Health: " + parameters.Health;
 		_armorText.text = "Armor: " + parameters.armor;
@@ -131,12 +143,14 @@ public class Player : MovingObject {
 				_questLog.text += "\n";
 			}
 		}
+
+		_swordImage.enabled = HasItem("Sword");
+		_pickaxeImage.enabled = HasItem("Pickaxe");
+		_shovelImage.enabled = HasItem("Shovel");
+		_keyImage.enabled = HasItem("Key");
+		_amountText.text = "x" + parameters.storedFood;
 	}
 
-//	private void UpdateInventory() {
-//		
-//	}
-	
 	private void Update () {
 
 		GameManager.Instance.timeElapsed += Time.deltaTime;
@@ -147,6 +161,7 @@ public class Player : MovingObject {
 			if (parameters.storedFood > 0) {
 				Heal(ConsumableHealValue);
 				parameters.storedFood--;
+				_amountText.text = "x" + parameters.storedFood;
 			}
 			
 			StartCoroutine(WaitTillNextMove());
@@ -200,6 +215,15 @@ public class Player : MovingObject {
 	private void AcquireItem(string itemName) {
 		parameters.items[parameters.items.FindIndex(x => x.name.Equals(itemName))].isActive = true;
 		_popUp.text = itemName + " obtained!";
+
+		if (itemName == "Sword")
+			_swordImage.enabled = true;
+		else if (itemName == "Pickaxe")
+			_pickaxeImage.enabled = true;
+		else if (itemName == "Shovel")
+			_shovelImage.enabled = true;
+		else if (itemName == "Key") 
+			_keyImage.enabled = true;
 	}
 
 	private void AssignExperience(int experienceGained) {
@@ -219,7 +243,7 @@ public class Player : MovingObject {
 	
 	protected override void AttemptMove (int xDir, int yDir) {
 		
-		UpdateTexts();
+		UpdateUi();
 		
 		GameManager.Instance.playerCanMove = false;
 

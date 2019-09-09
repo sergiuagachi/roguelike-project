@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 9016094840855639442}
   - component: {fileID: 1863371066217050277}
   m_Layer: 5
-  m_Name: Sword
+  m_Name: SwordImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5456976608793638223
 RectTransform:
   m_ObjectHideFlags: 0
@@ -87,12 +87,12 @@ GameObject:
   - component: {fileID: 1592625437296218610}
   - component: {fileID: 272080181487132623}
   m_Layer: 5
-  m_Name: Ammount
+  m_Name: Amount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3265266678674977912
 RectTransform:
   m_ObjectHideFlags: 0
@@ -240,12 +240,12 @@ GameObject:
   - component: {fileID: 9066346688251209706}
   - component: {fileID: 2638862029662666054}
   m_Layer: 5
-  m_Name: Shovel
+  m_Name: ShovelImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6016405419114517374
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1191,12 +1191,12 @@ GameObject:
   - component: {fileID: 1209426860893952306}
   - component: {fileID: 1070757884962307266}
   m_Layer: 5
-  m_Name: Key
+  m_Name: KeyImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6581328071434926620
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1341,12 +1341,12 @@ GameObject:
   - component: {fileID: 7554593946078998395}
   - component: {fileID: 7307993230356717994}
   m_Layer: 5
-  m_Name: Pickaxe
+  m_Name: PickaxeImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8931645914139477493
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1766,12 +1766,12 @@ GameObject:
   - component: {fileID: 5381252225416998337}
   - component: {fileID: 7814326787906212417}
   m_Layer: 5
-  m_Name: Food
+  m_Name: FoodImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1127490833804420694
 RectTransform:
   m_ObjectHideFlags: 0

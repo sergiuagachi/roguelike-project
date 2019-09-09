@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour {
 	private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1) {
 		if (arg0.name == "End") return;
 		
-		Player.Instance.GetTexts();
+		Player.Instance.GetUi();
 		_floorText = GameObject.Find("FloorText").GetComponent<Text>();
 		_floorText.text = "Floor " + _floor;
 		
