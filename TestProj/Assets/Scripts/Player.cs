@@ -402,10 +402,11 @@ public class Player : MovingObject {
 
 			if (food.storable) {
 				parameters.storedFood++;
+				_amountText.text = "x" + parameters.storedFood;
 			}
 			else {
 				var healthPerFood = food.healthValue;
-				Heal(healthPerFood);
+				Heal(healthPerFood, false);
 			}
 		}
 
@@ -475,15 +476,17 @@ public class Player : MovingObject {
 		GameManager.Instance.playerCanMove = true;
 	}
 
-	public void Heal(int amount) {
+	public void Heal(int amount, bool isStorable) {
 
-		if (parameters.storedFood <= 0) {
-			_popUp.text = "You have no food stored!";
-			return;
+		if (isStorable) {
+			if (parameters.storedFood <= 0) {
+				_popUp.text = "You have no food stored!";
+				return;
+			}
+			
+			parameters.storedFood--;
+			_amountText.text = "x" + parameters.storedFood;
 		}
-		
-		parameters.storedFood--;
-		_amountText.text = "x" + parameters.storedFood;
 		
 		var oldHealth = parameters.Health;
 		parameters.Health = Math.Min(100, parameters.Health + amount);

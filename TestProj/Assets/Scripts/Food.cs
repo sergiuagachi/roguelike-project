@@ -7,7 +7,7 @@ public class Food : UniqueItem{
 
     private void OnMouseDown() {
         if (isUi) {
-            Player.Instance.Heal(healthValue);
+            Player.Instance.Heal(healthValue, true);
         }
     }
 }
