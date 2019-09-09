@@ -4,8 +4,9 @@ public class Checkpoint : MonoBehaviour
 {
     private SpriteRenderer _spriteRenderer;
     public Sprite activeSprite;
-
-    protected void Start () {
+    public int floor;
+    
+    protected void Awake () {
         _spriteRenderer = GetComponent<SpriteRenderer> ();
     }
     

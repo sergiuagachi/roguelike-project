@@ -47,7 +47,7 @@ public class Tutorial : MonoBehaviour {
 
     public Sprite exit;
     
-    private int _objectToShow;
+    private int _objectToShow = 0;
     private bool _isReady = true;
     
     private void Start() {
@@ -56,15 +56,21 @@ public class Tutorial : MonoBehaviour {
         _spr3 = objectToDraw3.GetComponent<SpriteRenderer>();
         
         _spr1.sprite = null;
-        _spr2.sprite = playerSprite;
+        _spr2.sprite = null;
         _spr3.sprite = null;
-        description.text = "This is you"; 
+        description.text = "This is a tutorial" + "\n" + "Left click for next panel, Right click for the previous";
     }
 
     private void Update() {
-        if(_isReady && Input.anyKey) {
+        if(_isReady && Input.GetKey(KeyCode.Mouse0)) {
             _isReady = false;
             _objectToShow++;
+            StartCoroutine(NextItem());
+        }
+        
+        if(_isReady && Input.GetKey(KeyCode.Mouse1)) {
+            _isReady = false;
+            _objectToShow--;
             StartCoroutine(NextItem());
         }
     }
@@ -73,75 +79,102 @@ public class Tutorial : MonoBehaviour {
         yield return new WaitForSeconds(0.2f);
         
         switch (_objectToShow) {
+            case 0:
+                _spr1.sprite = null;
+                _spr2.sprite = null;
+                _spr3.sprite = null;
+                description.text = "This is a tutorial" + "\n" + "Left click for the next panel, Right click for the previous";
+                break;
             case 1:
+                _spr1.sprite = null;
+                _spr2.sprite = playerSprite;
+                _spr3.sprite = null;
+                description.text = "This is you";
+                break;
+            case 2:
                 _spr1.sprite = enemy1;
                 _spr2.sprite = enemy2;
                 _spr3.sprite = enemy3;
                 description.text = "They are your enemies";
                 break;
-            case 2:
+            case 3:
+                _spr1.sprite = enemy1;
+                _spr2.sprite = enemy2;
+                _spr3.sprite = enemy3;
+                description.text = "Use the cursor to hover over them to learn more";
+                break;
+            case 4:
                 _spr1.sprite = pickaxe;
                 _spr2.sprite = sword;
                 _spr3.sprite = shovel;
                 description.text = "These are used to pass obstacles";
                 break;
-            case 3:
+            case 5:
                 _spr1.sprite = food1;
                 _spr2.sprite = null;
                 _spr3.sprite = food2;
                 description.text = "This is food, it heals you";
                 break;
-            case 4:
+            case 6:
+                _spr1.sprite = food1;
+                _spr2.sprite = null;
+                _spr3.sprite = food2;
+                description.text = "Click on the watermelon on the right menu to heal 40hp";
+                break;
+            case 7:
                 _spr1.sprite = stairsUp;
                 _spr2.sprite = null;
                 _spr3.sprite = stairsDown;
                 description.text = "You will use this to go up and down the tower";
                 break;
-            case 5:
+            case 8:
                 _spr1.sprite = stoneWall ;
                 _spr2.sprite = null;
                 _spr3.sprite = dirtWall;
                 description.text = "These block your movement and can be destroyed with a tool";
                 break;
-            case 6:
+            case 9:
                 _spr1.sprite = outerWallSprite;
                 _spr2.sprite = null;
                 _spr3.sprite = interiorWallSprite;
                 description.text = "These block your movement and can't be destroyed";
                 break;
-            case 7:
+            case 10:
                 _spr1.sprite = chest;
                 _spr2.sprite = null;
                 _spr3.sprite = key;
                 description.text = "You will find about these once you start the game";
                 break;
-            case 8:
+            case 11:
                 _spr1.sprite = null;
                 _spr2.sprite = checkpoint;
                 _spr3.sprite = null;
                 description.text = "This is a checkpoint, you respawn here when you die";
                 break;
-            case 9:
+            case 12:
                 _spr1.sprite = null;
                 _spr2.sprite = sign;
                 _spr3.sprite = null;
                 description.text = "You get your info from these";
                 break;
-            case 10:
+            case 13:
                 _spr1.sprite = null;
                 _spr2.sprite = exit;
                 _spr3.sprite = null;
                 description.text = "You exit from here";
                 break;
-            case 11:
+            case 14:
                 _spr1.sprite = null;
                 _spr2.sprite = null;
                 _spr3.sprite = null;
                 description.text = "";
                 endTutorial.text = "Press any key to start the intro";
                 break;
-            default:
+            case 15:
                 SceneManager.LoadScene("Intro", LoadSceneMode.Single);
+                break;
+            default:
+                _objectToShow = 0;
                 break;
         }
 

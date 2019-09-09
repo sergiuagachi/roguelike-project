@@ -65,6 +65,14 @@ public class GameManager : MonoBehaviour {
 				spawnedItem.gameObject.SetActive(false);
 			}
 		}
+
+		var findObj = GameObject.Find("CheckPoint");
+		if (!findObj) return;
+		
+		var checkpoint = findObj.GetComponent<Checkpoint>();
+		if(checkpoint.transform.position == _lastCheckpointPosition &&
+		   checkpoint.floor == _lastCheckpointFloor)
+			checkpoint.Activate();
 	}
 
 	public void ActivateCheckpoint(Transform checkpoint) {

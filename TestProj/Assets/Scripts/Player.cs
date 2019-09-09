@@ -122,7 +122,7 @@ public class Player : MovingObject {
 		_pickaxeImage = GameObject.Find("PickaxeImage").GetComponent<Image>();
 		_shovelImage = GameObject.Find("ShovelImage").GetComponent<Image>();
 		_keyImage = GameObject.Find("KeyImage").GetComponent<Image>();
-		_foodImage = GameObject.Find("FoodImage").GetComponent<Food>();
+//		_foodImage = GameObject.Find("FoodImage").GetComponent<Food>();
 		_amountText = GameObject.Find("Amount").GetComponent<Text>();
 		
 		UpdateUi();
@@ -388,6 +388,8 @@ public class Player : MovingObject {
 			if (GameManager.Instance.GetLastCheckpointPosition() != other.transform.position) {
 			   _popUp.text = "Checkpoint reached. Saved!";
 			}
+
+			other.GetComponent<Checkpoint>().Activate();
 			
 			GameManager.Instance.ActivateCheckpoint(other.transform);
 			return;
